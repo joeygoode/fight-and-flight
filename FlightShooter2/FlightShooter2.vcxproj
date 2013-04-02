@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ControllerMover.cpp" />
+    <ClCompile Include="DirectXManager.cpp" />
     <ClCompile Include="DynamicMover.cpp" />
     <ClCompile Include="EFighter.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -100,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Component.h" />
     <ClInclude Include="ControllerMover.h" />
+    <ClInclude Include="DirectXManager.h" />
     <ClInclude Include="DynamicMover.h" />
     <ClInclude Include="EFighter.h" />
     <ClInclude Include="Enemy.h" />

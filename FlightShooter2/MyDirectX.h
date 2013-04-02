@@ -30,7 +30,7 @@ extern int SCREENH;
 extern bool gameover;
 
 //Direct 3D Objects
-extern LPDIRECT3D9 d3d;
+extern LPDIRECT3D10 d3d;
 extern LPDIRECT3DDEVICE9 d3ddev;
 extern LPDIRECT3DSURFACE9 backbuffer;
 extern LPD3DXSPRITE spriteobj;
