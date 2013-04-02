@@ -1,0 +1,72 @@
+﻿Build started 3/3/2013 4:25:00 PM.
+     1>Project "C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\FlightShooter2\FlightShooter2.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Collider.cpp Component.cpp ControllerMover.cpp DynamicMover.cpp EFighter.cpp Enemy.cpp Entity.cpp FlightShooter.cpp Level.cpp Mover.cpp MyDirectX.cpp MyWindows.cpp PPBasic.cpp Player.cpp PlayerProjectile.cpp Renderer.cpp ScriptedMover.cpp World.cpp
+         World.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         FlightShooter.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Entity.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Generating Code...
+         Compiling...
+         ScriptedMover.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+     1>c:\users\joey\documents\visual studio 2012\projects\flightshooter2\flightshooter2\scriptedmover.cpp(27): warning C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
+         Renderer.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         PlayerProjectile.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Player.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         PPBasic.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Mover.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Level.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+     1>c:\users\joey\documents\visual studio 2012\projects\flightshooter2\flightshooter2\level.cpp(90): warning C4244: 'argument' : conversion from 'int' to 'FLOAT', possible loss of data
+     1>c:\users\joey\documents\visual studio 2012\projects\flightshooter2\flightshooter2\level.cpp(91): warning C4244: 'argument' : conversion from 'int' to 'FLOAT', possible loss of data
+     1>c:\users\joey\documents\visual studio 2012\projects\flightshooter2\flightshooter2\level.cpp(92): warning C4244: 'argument' : conversion from 'int' to 'FLOAT', possible loss of data
+         Enemy.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         EFighter.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+     1>c:\users\joey\documents\visual studio 2012\projects\flightshooter2\flightshooter2\efighter.cpp(14): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+         DynamicMover.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         ControllerMover.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Component.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Collider.cpp
+         c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         MyWindows.cpp
+         MyDirectX.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\Debug\FlightShooter2.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\Debug\FlightShooter2.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\Debug\FlightShooter2.lib" /MACHINE:X86 Debug\Component.obj
+         Debug\ControllerMover.obj
+         Debug\DynamicMover.obj
+         Debug\EFighter.obj
+         Debug\Enemy.obj
+         Debug\Collider.obj
+         Debug\Entity.obj
+         Debug\Level.obj
+         Debug\Mover.obj
+         Debug\MyDirectX.obj
+         Debug\MyWindows.obj
+         Debug\FlightShooter.obj
+         Debug\Player.obj
+         Debug\PlayerProjectile.obj
+         Debug\PPBasic.obj
+         Debug\Renderer.obj
+         Debug\ScriptedMover.obj
+         Debug\World.obj
+         FlightShooter2.vcxproj -> C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\Debug\FlightShooter2.exe
+     1>Done Building Project "C:\Users\Joey\Documents\Visual Studio 2012\Projects\FlightShooter2\FlightShooter2\FlightShooter2.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:27.18

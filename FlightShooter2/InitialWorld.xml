@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<World>
+  <!-- 
+  STARTY is the distance from the bottom of the screen where the player
+  ship is placed.
+  MOVEDISTANCE is the distance the player moves every time a key is pressed
+  -->
+  <WorldConstants
+  APPTITLE="FlightShooter"
+  SCREENW="600"
+  SCREENH="1000"
+  spritesheet="1945.png"
+  colormatter="8"
+  colormatteg="54"
+  colormatteb="129"
+  >
+  </WorldConstants>
+  <PlayerConstants  
+  STARTY="50"
+  MOVEDISTANCE="5"
+  SHOTFRAME="20"
+  >
+  </PlayerConstants>
+  <Level>
+    <LevelConstants>
+    </LevelConstants>
+    <EnemyList>
+      <EFighter>
+        <KeyFrameList>
+          <KeyFrame 
+          id="0"
+          posx="-16"
+          posy="50"
+          rot="315"
+          frames="120"
+          nextid="1"
+          ></KeyFrame>
+          <KeyFrame 
+          id="1"
+          posx="600"
+          posy="500"
+          rot="315"
+          frames="30"
+          nextid="2"
+          ></KeyFrame>
+          <KeyFrame 
+          id="2"
+          posx="600"
+          posy="500"
+          rot="225"
+          frames="120"
+          nextid="3"
+          ></KeyFrame>
+          <KeyFrame 
+          id="3"
+          posx="616"
+          posy="50"
+          rot="315"
+          frames="0"
+          nextid="-1"
+          ></KeyFrame>
+        </KeyFrameList>
+      </EFighter>
+    </EnemyList>
+  </Level>
+</World>
