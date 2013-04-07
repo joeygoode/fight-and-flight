@@ -32,11 +32,11 @@ CMatrix CMatrix::operator*(CMatrix that)
 	return CMatrix(m_DXMatrix * *that.GetD3DXMATRIX());
 }
 
-void CMatrix::CreateIdentityMatrix( _Out_ CMatrix* &pOut)
+void CMatrix::CreateIdentityMatrix( _Out_ CMatrix& pOut)
 {
 	D3DXMATRIX DXMatrix;
 	D3DXMatrixIdentity(&DXMatrix);
-	pOut = &CMatrix(DXMatrix);
+	pOut.m_DXMatrix = DXMatrix;
 }
 
 //-----------------------------------------------------------------------------
@@ -54,14 +54,14 @@ void CMatrix::CreateIdentityMatrix( _Out_ CMatrix* &pOut)
 void CMatrix::CreateMatrixLookAtLH(	_In_ CVector3* pEye,
 									_In_ CVector3* pAt,
 									_In_ CVector3* pUp,
-									_Out_ CMatrix* &pOut)
+									_Out_ CMatrix& pOut)
 {
-	D3DXMATRIX matrix;
+	D3DXMATRIX DXMatrix;
 	D3DXVECTOR3 eye = D3DXVECTOR3(pEye->GetD3DXVECTOR3());
 	D3DXVECTOR3 at = D3DXVECTOR3(pAt->GetD3DXVECTOR3());
 	D3DXVECTOR3 up = D3DXVECTOR3(pUp->GetD3DXVECTOR3());
-	D3DXMatrixLookAtLH(&matrix, &eye, &at, &up);
-	pOut = &CMatrix(matrix);
+	D3DXMatrixLookAtLH(&DXMatrix, &eye, &at, &up);
+	pOut.m_DXMatrix = DXMatrix;
 }
 
 //-----------------------------------------------------------------------------
@@ -82,11 +82,11 @@ void CMatrix::CreateMatrixPerspectiveFovLH(	_In_ float vFov,
 											_In_ float aspectRatio,
 											_In_ float zNearPlane,
 											_In_ float zFarPlane,
-											_Out_ CMatrix* &pOut)
+											_Out_ CMatrix& pOut)
 {
-	D3DXMATRIX matrix;
-	D3DXMatrixPerspectiveFovLH(&matrix, vFov, aspectRatio, zNearPlane, zFarPlane);
-	pOut = &CMatrix(matrix);
+	D3DXMATRIX DXMatrix;
+	D3DXMatrixPerspectiveFovLH(&DXMatrix, vFov, aspectRatio, zNearPlane, zFarPlane);
+	pOut.m_DXMatrix = DXMatrix;
 }
 
 //-----------------------------------------------------------------------------
@@ -100,11 +100,11 @@ void CMatrix::CreateMatrixPerspectiveFovLH(	_In_ float vFov,
 //	- pOut: A CMatrix to store the new matrix in
 //-----------------------------------------------------------------------------
 void CMatrix::CreateMatrixRotationY(_In_ float angle,
-									_Out_ CMatrix* &pOut)
+									_Out_ CMatrix& pOut)
 {
-	D3DXMATRIX matrix;
-	D3DXMatrixRotationY(&matrix, angle);
-	pOut = &CMatrix(matrix);
+	D3DXMATRIX DXMatrix;
+	D3DXMatrixRotationY(&DXMatrix, angle);
+	pOut.m_DXMatrix = DXMatrix;
 }
 //-----------------------------------------------------------------------------
 // Name: CreateMatrixTranslation
@@ -121,11 +121,11 @@ void CMatrix::CreateMatrixRotationY(_In_ float angle,
 void CMatrix::CreateMatrixTranslation(	_In_ float x,
 										_In_ float y,
 										_In_ float z,
-										_Out_ CMatrix* &pOut)
+										_Out_ CMatrix& pOut)
 {
-	D3DXMATRIX matrix;
-	D3DXMatrixTranslation( &matrix, x, y, z);
-	pOut = &CMatrix(matrix);
+	D3DXMATRIX DXMatrix;
+	D3DXMatrixTranslation(&DXMatrix, x, y, z);
+	pOut.m_DXMatrix = DXMatrix;
 }
 
 #endif

@@ -14,14 +14,13 @@
 #include <d3d10.h>
 #include <d3dx10.h>
 
+#include "Matrix.h"
 #include <vector>
 using namespace std;
 
 #include "vertexTypes.h"
 
 class CMesh;
-class CMatrix;
-class CVector3;
 
 
 class CDirectXManager
@@ -56,9 +55,9 @@ private:
 	ID3D10EffectMatrixVariable* pWorldMatrixEffectVariable;
 	
 	//projection and view matrices
-	CMatrix*					pWorldMatrix;
-	CMatrix*					pViewMatrix;
-	CMatrix*					pProjectionMatrix;
+	CMatrix						WorldMatrix;
+	CMatrix						ViewMatrix;
+	CMatrix						ProjectionMatrix;
 
 	//technique
 	D3D10_TECHNIQUE_DESC		techDesc;

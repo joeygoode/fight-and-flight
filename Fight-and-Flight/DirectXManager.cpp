@@ -17,14 +17,9 @@ CDirectXManager::CDirectXManager() :	pD3DDevice(NULL),
 										pRS(0),							
 										pDepthStencil(0)
 {
-	pWorldMatrix = NULL;
-	pProjectionMatrix = NULL;
-	pViewMatrix = NULL;
-
-
-	CMatrix::CreateIdentityMatrix(pWorldMatrix);
-	CMatrix::CreateIdentityMatrix(pProjectionMatrix);
-	CMatrix::CreateIdentityMatrix(pViewMatrix);
+	CMatrix::CreateIdentityMatrix(WorldMatrix);
+	CMatrix::CreateIdentityMatrix(ProjectionMatrix);
+	CMatrix::CreateIdentityMatrix(ViewMatrix);
 }
 /*******************************************************************
 * Destructor
@@ -77,12 +72,12 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 							CVector3(0.0f, 0.0f, 1.0f),
 							CVector3(0.0f, 1.0f, 0.0f)	};
 	
-	CMatrix::CreateMatrixLookAtLH(&camera[0], &camera[1], &camera[2], pViewMatrix);		
-	CMatrix::CreateMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f, pProjectionMatrix);
+	CMatrix::CreateMatrixLookAtLH(&camera[0], &camera[1], &camera[2], ViewMatrix);		
+	CMatrix::CreateMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f, ProjectionMatrix);
 	
 	//set shader matrices
-	pViewMatrixEffectVariable->SetMatrix(*pViewMatrix->GetD3DXMATRIX());
-	pProjectionMatrixEffectVariable->SetMatrix(*pProjectionMatrix->GetD3DXMATRIX());
+	pViewMatrixEffectVariable->SetMatrix(*ViewMatrix.GetD3DXMATRIX());
+	pProjectionMatrixEffectVariable->SetMatrix(*ProjectionMatrix.GetD3DXMATRIX());
 
 	// Initialize Scene Objects
 	//*****************************************************************************
@@ -295,7 +290,7 @@ void CDirectXManager::EndScene(void)
 void CDirectXManager::renderScene(CMesh* pMesh)
 {
 	//rotate object - rotation should be timer based but i'm lazy
-	CMatrix* temp = new CMatrix();
+	CMatrix temp = CMatrix();
 	static float r = 0;	
 	r += 0.0001f;
 
@@ -307,11 +302,10 @@ void CDirectXManager::renderScene(CMesh* pMesh)
 		for ( int rows = 0; rows < 15; rows ++ )
 		{
 			//position cube
-			CMatrix::CreateMatrixRotationY(r,pWorldMatrix);
+			CMatrix::CreateMatrixRotationY(r,WorldMatrix);
 			CMatrix::CreateMatrixTranslation(rcOrigin.x + 4 * cols, 0, rcOrigin.z + 4 * rows,  temp);
-			*pWorldMatrix *= *temp;
-			delete temp;
-			pWorldMatrixEffectVariable->SetMatrix(*pWorldMatrix->GetD3DXMATRIX());
+			WorldMatrix *= temp;
+			pWorldMatrixEffectVariable->SetMatrix(*WorldMatrix.GetD3DXMATRIX());
 
 			//draw cube
 			for( UINT p = 0; p < techDesc.Passes; p++ )
