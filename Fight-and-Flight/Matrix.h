@@ -10,10 +10,10 @@ public:
 	CMatrix(void);
 	~CMatrix(void);
 	static void CreateIdentityMatrix(CMatrix& pOut);
-	static void CreateMatrixLookAtLH(	_In_ CVector3* pEye,
-										_In_ CVector3* pAt,
-										_In_ CVector3* pUp,
-										_Out_ CMatrix& pOut);
+	static void CreateMatrixLookAtLH(	_In_ const CVector3& pEye,
+										_In_ const CVector3& pAt,
+										_In_ const CVector3& pUp,
+										_Out_ CMatrix& Out);
 	static void CreateMatrixPerspectiveFovLH(	_In_ float vFov,
 												_In_ float aspectRatio,
 												_In_ float zNearPlane,

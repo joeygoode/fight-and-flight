@@ -51,14 +51,16 @@ private:
 	ID3D10EffectMatrixVariable* pWorldMatrixEffectVariable;
 	*/
 	//projection and view matrices
-	CMatrix						WorldMatrix;
+	
 	CMatrix						ViewMatrix;
 	CMatrix						ProjectionMatrix;
+
 	/*******************************************************************
 	* Methods
 	********************************************************************/	
 public:
-
+	CMatrix						WorldMatrix;
+	ID3DX10Sprite*				pSprite;
 	//constructor and destructor
 	CDirectXManager();
 	~CDirectXManager();
@@ -70,14 +72,17 @@ public:
 	void BeginScene(void);
 	void EndScene(void);
 	void renderScene(CMesh* pMesh, CEffect* pEffect);	
-	bool CreateMesh(_In_ vector<vertex> vertices,
-					_In_ vector<UINT> indices,
+	bool CreateMesh(_In_ const vector<vertex>& vertices,
+					_In_ const vector<UINT>& indices,
 					_In_ int NumFaces,
 					_Out_ CMesh* &pMesh);
-	bool CreateShader(	_In_ string filename,
-						_In_ vector<string> names,
-						_In_ vector<string> types,
+	bool CreateShader(	_In_ const string& filename,
+						_In_ const vector<string>& names,
+						_In_ const vector<string>& types,
 						_Out_ CEffect* &pOut);
+	ID3DX10Font* MakeFont(string name, int size);
+	void FontPrint(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color);
+	void ResetStates();
 private:
 
 	//initialization methods

@@ -58,11 +58,12 @@ bool CEffect::Initialize(const vector<string>& names,const vector<string>& types
 	if (names.size() != types.size())
 		return false;
 	m_FXVariables.resize(names.size());
-	for (int i = 0; i < names.size(); i++)
+	for (unsigned int i = 0; i < names.size(); i++)
 	{
 		if (!CEffectVariable::CreateEffectVariable(names[i],types[i],*this, &m_FXVariables[i]))
 			return false;
 	}
+	return true;
 }
 
 CEffect::~CEffect(void)

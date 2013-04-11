@@ -20,8 +20,8 @@ class CEffectVariable
 public:
 	CEffectVariable(void);
 	~CEffectVariable(void);
-	bool SetMatrixVariable(CMatrix matrix) const;
-	bool SetVectorVariable(CVector4 vector) const;
+	bool SetMatrixVariable(const CMatrix& matrix) const;
+	bool SetVectorVariable(const CVector4& vector) const;
 	bool SetScalarVariable(float f) const;
 	string GetName() const;
 private:

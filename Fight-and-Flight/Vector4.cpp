@@ -71,7 +71,7 @@ CVector4::CVector4(D3DXVECTOR4 DXVector)
 {
 	m_DXVector = DXVector;
 }
-D3DXVECTOR4 CVector4::GetD3DXVECTOR4(void)
+D3DXVECTOR4 CVector4::GetD3DXVECTOR4(void) const
 {
 	return m_DXVector;
 }

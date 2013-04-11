@@ -1,6 +1,9 @@
 #include "Game.h"
 #include "Mesh.h"
 #include "Effect.h"
+#include <sstream>
+#include <Windows.h>
+using namespace std;
 
 //-----------------------------------------------------------------------------
 // Name: CGame
@@ -80,6 +83,8 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	if (!pGame->m_pDirectX->CreateMesh(vertices,indices,6,pGame->m_pMesh))
 		return false;
 
+	pGame->pDebugFont = pGame->m_pDirectX->MakeFont("Arial", 14);
+	return true;
 }
 	
 //-----------------------------------------------------------------------------
@@ -90,8 +95,45 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 //-----------------------------------------------------------------------------
 bool CGame::UpdateAndRender(void)
 {
+	int time = timeGetTime();
 	m_pDirectX->BeginScene();
-	m_pDirectX->renderScene(m_pMesh, m_pEffect);
+		//rotate object - rotation should be timer based but i'm lazy
+	
+	
+	CMatrix temp = CMatrix();
+	static float r = 0;	
+	r += 0.0001f;
+
+	CVector3 rcOrigin(-14, 0, 0);
+
+	//draw lots of cubes
+	for ( int cols = 0; cols < 10; cols++ )
+	{
+		for ( int rows = 0; rows < 15; rows ++ )
+		{
+			//position cube
+			CMatrix::CreateMatrixRotationY(r,m_pDirectX->WorldMatrix);
+			CMatrix::CreateMatrixTranslation(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows,  temp);
+			m_pDirectX->WorldMatrix *= temp;
+			m_pEffect->SetVariableByName("World",m_pDirectX->WorldMatrix);
+
+			//draw cube
+			for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
+			{
+				//apply technique
+				m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
+				m_pMesh->Draw();
+			}
+		}
+	}
+	time = timeGetTime() - time;
+	ostringstream convert;
+	convert << time;
+	m_pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
+	m_pDirectX->FontPrint(pDebugFont,20,20,convert.str(),D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	m_pDirectX->pSprite->Flush();
+	m_pDirectX->pSprite->End();
+	m_pDirectX->ResetStates();
 	m_pDirectX->EndScene();
 	return true;
 }

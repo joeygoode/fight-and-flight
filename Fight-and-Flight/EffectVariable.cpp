@@ -10,7 +10,7 @@ CEffectVariable::~CEffectVariable(void)
 {
 }
 
-bool CEffectVariable::SetMatrixVariable(CMatrix matrix) const
+bool CEffectVariable::SetMatrixVariable(const CMatrix& matrix) const
 {
 #if (GRAPHICSAPI == DIRECTX10)
 	if (m_type == MATRIX)
@@ -22,7 +22,7 @@ bool CEffectVariable::SetMatrixVariable(CMatrix matrix) const
 		return false;
 #endif
 }
-bool CEffectVariable::SetVectorVariable(CVector4 vector) const
+bool CEffectVariable::SetVectorVariable(const CVector4& vector) const
 {
 #if (GRAPHICSAPI == DIRECTX10)
 	if (m_type == VECTOR)

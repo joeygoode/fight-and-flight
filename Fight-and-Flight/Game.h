@@ -20,5 +20,6 @@ private:
 	// mesh
 	CMesh* m_pMesh;
 	CEffect* m_pEffect;
+	ID3DX10Font* pDebugFont;
 };
 

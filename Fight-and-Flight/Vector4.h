@@ -14,7 +14,7 @@ public:
 #if (GRAPHICSAPI == DIRECTX10)
 public:
 	CVector4(D3DXVECTOR4 DXVector);
-	D3DXVECTOR4 GetD3DXVECTOR4(void);
+	D3DXVECTOR4 GetD3DXVECTOR4(void) const;
 private:
 	D3DXVECTOR4 m_DXVector;
 #endif

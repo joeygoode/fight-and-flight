@@ -52,15 +52,15 @@ void CMatrix::CreateIdentityMatrix(_Out_ CMatrix& pOut)
 // Outputs:
 //	- pOut: A CMatrix to store the new matrix in
 //-----------------------------------------------------------------------------
-void CMatrix::CreateMatrixLookAtLH(	_In_ CVector3* pEye,
-									_In_ CVector3* pAt,
-									_In_ CVector3* pUp,
+void CMatrix::CreateMatrixLookAtLH(	_In_ const CVector3& pEye,
+									_In_ const CVector3& pAt,
+									_In_ const CVector3& pUp,
 									_Out_ CMatrix& pOut)
 {
 	D3DXMATRIX DXMatrix;
-	D3DXVECTOR3 eye = D3DXVECTOR3(pEye->GetD3DXVECTOR3());
-	D3DXVECTOR3 at = D3DXVECTOR3(pAt->GetD3DXVECTOR3());
-	D3DXVECTOR3 up = D3DXVECTOR3(pUp->GetD3DXVECTOR3());
+	D3DXVECTOR3 eye = D3DXVECTOR3(pEye.GetD3DXVECTOR3());
+	D3DXVECTOR3 at = D3DXVECTOR3(pAt.GetD3DXVECTOR3());
+	D3DXVECTOR3 up = D3DXVECTOR3(pUp.GetD3DXVECTOR3());
 	D3DXMatrixLookAtLH(&DXMatrix, &eye, &at, &up);
 	pOut.m_DXMatrix = DXMatrix;
 }

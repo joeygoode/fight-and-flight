@@ -21,9 +21,6 @@ CDirectXManager::CDirectXManager() :	pD3DDevice(NULL),
 	CMatrix::CreateIdentityMatrix(WorldMatrix);
 	CMatrix::CreateIdentityMatrix(ProjectionMatrix);
 	CMatrix::CreateIdentityMatrix(ViewMatrix);
-	//pViewMatrixEffectVariable = NULL;
-	//pProjectionMatrixEffectVariable = NULL;
-	//pWorldMatrixEffectVariable = NULL;
 }
 /*******************************************************************
 * Destructor
@@ -71,9 +68,11 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 							CVector3(0.0f, 0.0f, 1.0f),
 							CVector3(0.0f, 1.0f, 0.0f)	};
 	
-	CMatrix::CreateMatrixLookAtLH(&camera[0], &camera[1], &camera[2], ViewMatrix);		
+	CMatrix::CreateMatrixLookAtLH(camera[0], camera[1], camera[2], ViewMatrix);		
 	CMatrix::CreateMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f, ProjectionMatrix);
 	
+	if(FAILED(D3DX10CreateSprite(pD3DDevice,16,&pSprite)))
+		return fatalError("Sprite failed.");
 
 
 	// Initialize Scene Objects
@@ -208,9 +207,9 @@ bool CDirectXManager::createRenderTargetsAndDepthBuffer( UINT width, UINT height
 /*******************************************************************
 * Shader Loader
 *******************************************************************/
-bool CDirectXManager::CreateShader(_In_ const string filename, 
-								   _In_ vector<string> names, 
-								   _In_ vector<string> types, 
+bool CDirectXManager::CreateShader(_In_ const string& filename, 
+								   _In_ const vector<string>& names, 
+								   _In_ const vector<string>& types, 
 								   _Out_ CEffect* &pEffect)
 {
 	ID3D10Effect* pDXEffect;
@@ -273,8 +272,8 @@ bool CDirectXManager::CreateShader(_In_ const string filename,
 //	- pMesh: A pointer to the newly created mesh.
 //	- retval: false if the API calls failed.
 //-----------------------------------------------------------------------------
-bool CDirectXManager::CreateMesh(	_In_ vector<vertex> vertices,
-									_In_ vector<UINT> indices,
+bool CDirectXManager::CreateMesh(	_In_ const vector<vertex>& vertices,
+									_In_ const vector<UINT>& indices,
 									_In_ int numFaces,
 									_Out_ CMesh* &pMesh)
 {
@@ -313,16 +312,15 @@ void CDirectXManager::renderScene(CMesh* pMesh, CEffect* pEffect)
 	D3DXVECTOR3 rcOrigin(-14, 0, 0);
 
 	//draw lots of cubes
-	for ( int cols = 0; cols < 8; cols++ )
+	for ( int cols = 0; cols < 10; cols++ )
 	{
-		for ( int rows = 0; rows < 7; rows ++ )
+		for ( int rows = 0; rows < 15; rows ++ )
 		{
 			//position cube
 			CMatrix::CreateMatrixRotationY(r,WorldMatrix);
 			CMatrix::CreateMatrixTranslation(rcOrigin.x + 4 * cols, 0, rcOrigin.z + 4 * rows,  temp);
 			WorldMatrix *= temp;
 			pEffect->SetVariableByName("World",WorldMatrix);
-			//pWorldMatrixEffectVariable->SetMatrix(WorldMatrix.GetD3DXMATRIX());
 
 			//draw cube
 			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
@@ -342,4 +340,40 @@ bool CDirectXManager::fatalError(const LPCSTR msg)
 {
 	MessageBox(*hWnd, msg, "Fatal Error!", MB_ICONERROR);
 	return false;
+}
+
+ID3DX10Font* CDirectXManager::MakeFont(string name, int size)
+{
+	ID3DX10Font* font = NULL;
+	D3DX10_FONT_DESC desc = {
+		size,
+		0,
+		0,
+		0,
+		false,
+		DEFAULT_CHARSET,
+		OUT_TT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_PITCH,
+		""
+	};
+	strcpy(desc.FaceName, name.c_str());
+	D3DX10CreateFontIndirect(pD3DDevice, &desc, &font);
+	return font;
+}
+
+void CDirectXManager::FontPrint(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color)
+{
+	ID3D10DepthStencilState* pDSState = NULL;
+	UINT reference;
+	pD3DDevice->OMGetDepthStencilState(&pDSState,&reference);
+	RECT rect = {x,y,0,0};
+	HRESULT result = font->DrawText(NULL,text.c_str(),text.length(),&rect,DT_CALCRECT,color);
+	result = font->DrawText(pSprite,text.c_str(),text.length(),&rect,DT_LEFT,color);
+	pD3DDevice->OMSetDepthStencilState(pDSState,reference);
+}
+
+void CDirectXManager::ResetStates()
+{
+
 }

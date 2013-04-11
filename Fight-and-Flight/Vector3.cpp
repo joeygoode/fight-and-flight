@@ -58,7 +58,7 @@ CVector3::CVector3(D3DXVECTOR3 DXVector)
 {
 	m_DXVector = DXVector;
 }
-D3DXVECTOR3 CVector3::GetD3DXVECTOR3(void)
+D3DXVECTOR3 CVector3::GetD3DXVECTOR3(void) const
 {
 	return m_DXVector;
 }
