@@ -19,5 +19,6 @@ private:
 	CDirectXManager* m_pDirectX;
 	// mesh
 	CMesh* m_pMesh;
+	CEffect* m_pEffect;
 };
 

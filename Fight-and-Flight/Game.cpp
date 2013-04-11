@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Mesh.h"
+#include "Effect.h"
 
 //-----------------------------------------------------------------------------
 // Name: CGame
@@ -11,6 +12,7 @@ CGame::CGame(void)
 {
 	m_pDirectX = NULL;
 	m_pMesh = NULL;
+	m_pEffect = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -23,6 +25,7 @@ CGame::~CGame(void)
 {
 	delete m_pDirectX;
 	delete m_pMesh;
+	delete m_pEffect;
 }
 	
 //-------------------------------------------------------------------------
@@ -42,6 +45,18 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	pGame->m_pDirectX = new CDirectXManager();
 	if (!pGame->m_pDirectX->initialize(hWnd))
 		return false;
+
+	vector<string> names = vector<string>(3);
+	names[0] = "World";
+	names[1] = "Projection";
+	names[2] = "View";
+	vector<string> types = vector<string>(3);
+	for (int i = 0; i < 3; i++)
+		types[i] = "matrix";
+
+	if(!pGame->m_pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
+		return false;
+
 	vector<vertex> vertices = vector<vertex>();
 	vertices.push_back(vertex( D3DXVECTOR3(-1,1,-1), D3DXVECTOR4(1,0,0,1)));	//front top left
 	vertices.push_back(vertex( D3DXVECTOR3(1,1,-1), D3DXVECTOR4(0,1,0,1)));		//front top right
@@ -76,7 +91,7 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 bool CGame::UpdateAndRender(void)
 {
 	m_pDirectX->BeginScene();
-	m_pDirectX->renderScene(m_pMesh);
+	m_pDirectX->renderScene(m_pMesh, m_pEffect);
 	m_pDirectX->EndScene();
 	return true;
 }

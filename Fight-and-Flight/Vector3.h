@@ -1,5 +1,8 @@
 #pragma once
+#if (GRAPHICSAPI == DIRECTX10)
 #include <D3DX10.h>
+#endif
+
 class CVector3
 {
 public:

@@ -21,7 +21,7 @@ using namespace std;
 #include "vertexTypes.h"
 
 class CMesh;
-
+class CEffect;
 
 class CDirectXManager
 {
@@ -44,24 +44,16 @@ private:
 
 	//input layout and mesh
 	ID3D10InputLayout*			pVertexLayout;
-
-	//effects and techniques
-	ID3D10Effect*				pBasicEffect;
-	ID3D10EffectTechnique*		pBasicTechnique;
-
+	/*
 	//effect variable pointers
 	ID3D10EffectMatrixVariable* pViewMatrixEffectVariable;
 	ID3D10EffectMatrixVariable* pProjectionMatrixEffectVariable;
 	ID3D10EffectMatrixVariable* pWorldMatrixEffectVariable;
-	
+	*/
 	//projection and view matrices
 	CMatrix						WorldMatrix;
 	CMatrix						ViewMatrix;
 	CMatrix						ProjectionMatrix;
-
-	//technique
-	D3D10_TECHNIQUE_DESC		techDesc;
-	
 	/*******************************************************************
 	* Methods
 	********************************************************************/	
@@ -77,16 +69,19 @@ public:
 	//scene function
 	void BeginScene(void);
 	void EndScene(void);
-	void renderScene(CMesh* pMesh);	
+	void renderScene(CMesh* pMesh, CEffect* pEffect);	
 	bool CreateMesh(_In_ vector<vertex> vertices,
 					_In_ vector<UINT> indices,
 					_In_ int NumFaces,
 					_Out_ CMesh* &pMesh);
+	bool CreateShader(	_In_ string filename,
+						_In_ vector<string> names,
+						_In_ vector<string> types,
+						_Out_ CEffect* &pOut);
 private:
 
 	//initialization methods
 	bool createSwapChainAndDevice( UINT width, UINT height );
-	bool loadShadersAndCreateInputLayouts();
 	void createViewports( UINT width, UINT height );
 	void initRasterizerState();
 	bool createRenderTargetsAndDepthBuffer( UINT width, UINT height );

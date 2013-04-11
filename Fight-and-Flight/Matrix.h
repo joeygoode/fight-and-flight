@@ -25,11 +25,11 @@ public:
 											_In_ float y,
 											_In_ float z,
 											_Out_ CMatrix& pOut);
-	CMatrix operator*=(CMatrix that);
-	CMatrix operator*(CMatrix that);
+	CMatrix operator*=(const CMatrix& that);
+	CMatrix operator*(const CMatrix& that);
 #if (GRAPHICSAPI == DIRECTX10)
 public:
-	D3DXMATRIX* GetD3DXMATRIX(void);
+	D3DXMATRIX GetD3DXMATRIX(void) const;
 	CMatrix(D3DXMATRIX DXMatrix);
 private:
 	D3DXMATRIX m_DXMatrix;

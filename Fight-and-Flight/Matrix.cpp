@@ -16,23 +16,24 @@ CMatrix::CMatrix(D3DXMATRIX DXMatrix)
 	m_DXMatrix = DXMatrix;
 }
 
-D3DXMATRIX* CMatrix::GetD3DXMATRIX(void)
+D3DXMATRIX CMatrix::GetD3DXMATRIX(void) const
 {
-	return &m_DXMatrix;
+	return m_DXMatrix;
 }
 
-CMatrix CMatrix::operator*=(CMatrix that)
+CMatrix CMatrix::operator*=(const CMatrix& that)
 {
-	m_DXMatrix *= *that.GetD3DXMATRIX();
+	m_DXMatrix *= that.GetD3DXMATRIX();
 	return *this;
 }
 
-CMatrix CMatrix::operator*(CMatrix that)
+CMatrix CMatrix::operator*(const CMatrix& that)
 {
-	return CMatrix(m_DXMatrix * *that.GetD3DXMATRIX());
+	return CMatrix(m_DXMatrix * that.GetD3DXMATRIX());
+
 }
 
-void CMatrix::CreateIdentityMatrix( _Out_ CMatrix& pOut)
+void CMatrix::CreateIdentityMatrix(_Out_ CMatrix& pOut)
 {
 	D3DXMATRIX DXMatrix;
 	D3DXMatrixIdentity(&DXMatrix);
@@ -121,11 +122,9 @@ void CMatrix::CreateMatrixRotationY(_In_ float angle,
 void CMatrix::CreateMatrixTranslation(	_In_ float x,
 										_In_ float y,
 										_In_ float z,
-										_Out_ CMatrix& pOut)
+										_Out_ CMatrix& Out)
 {
-	D3DXMATRIX DXMatrix;
-	D3DXMatrixTranslation(&DXMatrix, x, y, z);
-	pOut.m_DXMatrix = DXMatrix;
+	D3DXMatrixTranslation(&Out.m_DXMatrix, x, y, z);
 }
 
 #endif

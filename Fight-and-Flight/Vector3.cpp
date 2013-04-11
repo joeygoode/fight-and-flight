@@ -18,7 +18,7 @@ CVector3::~CVector3(void)
 // Type: Getter
 // Vis: Public
 // Outputs:
-//	- return : x component of the wrapped D3DXVECTOR3
+//	- retval : x component of the wrapped D3DXVECTOR3
 //-----------------------------------------------------------------------------
 float CVector3::GetX(void) const
 {
@@ -31,7 +31,7 @@ float CVector3::GetX(void) const
 // Type: Getter
 // Vis: Public
 // Outputs:
-//	- return : y component of the wrapped D3DXVECTOR3
+//	- retval : y component of the wrapped D3DXVECTOR3
 //-----------------------------------------------------------------------------
 float CVector3::GetY(void) const
 {
@@ -44,7 +44,7 @@ float CVector3::GetY(void) const
 // Type: Getter
 // Vis: Public
 // Outputs:
-//	- return : z component of the wrapped D3DXVECTOR3
+//	- retval : z component of the wrapped D3DXVECTOR3
 //-----------------------------------------------------------------------------
 float CVector3::GetZ(void) const
 {

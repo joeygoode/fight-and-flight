@@ -55,6 +55,15 @@
     <ClCompile Include="Vector3.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectVariable.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXManager.h">
@@ -73,6 +82,15 @@
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectVariable.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

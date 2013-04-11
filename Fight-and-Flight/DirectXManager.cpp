@@ -5,6 +5,7 @@ using namespace std;
 #include "Mesh.h"
 #include "Matrix.h"
 #include "Vector3.h"
+#include "Effect.h"
 
 /*******************************************************************
 * Constructor
@@ -13,13 +14,16 @@ CDirectXManager::CDirectXManager() :	pD3DDevice(NULL),
 										pSwapChain(NULL),
 										pRenderTargetView(NULL),							
 										pVertexLayout(0),
-										pBasicEffect(0),
 										pRS(0),							
 										pDepthStencil(0)
 {
+	hWnd = NULL;
 	CMatrix::CreateIdentityMatrix(WorldMatrix);
 	CMatrix::CreateIdentityMatrix(ProjectionMatrix);
 	CMatrix::CreateIdentityMatrix(ViewMatrix);
+	//pViewMatrixEffectVariable = NULL;
+	//pProjectionMatrixEffectVariable = NULL;
+	//pWorldMatrixEffectVariable = NULL;
 }
 /*******************************************************************
 * Destructor
@@ -30,8 +34,7 @@ CDirectXManager::~CDirectXManager()
 	if ( pSwapChain ) pSwapChain->Release();
 	if ( pD3DDevice ) pD3DDevice->Release();	
 	if ( pVertexLayout ) pVertexLayout->Release();
-	if ( pRS ) pRS->Release();
-	if ( pBasicEffect ) pBasicEffect->Release();	
+	if ( pRS ) pRS->Release();	
 	if ( pDepthStencil ) pDepthStencil->Release();
 
 }
@@ -51,11 +54,7 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 
 	// CREATE DEVICE
 	//*****************************************************************************
-	if ( !createSwapChainAndDevice(width, height) ) return false;
-	
-	// INPUT ASSEMBLY STAGE
-	//*****************************************************************************
-	if ( !loadShadersAndCreateInputLayouts() ) return false;			
+	if ( !createSwapChainAndDevice(width, height) ) return false;	
 
 	// RASTERIZER STAGE SETUP
 	//*****************************************************************************
@@ -75,9 +74,7 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 	CMatrix::CreateMatrixLookAtLH(&camera[0], &camera[1], &camera[2], ViewMatrix);		
 	CMatrix::CreateMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f, ProjectionMatrix);
 	
-	//set shader matrices
-	pViewMatrixEffectVariable->SetMatrix(*ViewMatrix.GetD3DXMATRIX());
-	pProjectionMatrixEffectVariable->SetMatrix(*ProjectionMatrix.GetD3DXMATRIX());
+
 
 	// Initialize Scene Objects
 	//*****************************************************************************
@@ -211,32 +208,33 @@ bool CDirectXManager::createRenderTargetsAndDepthBuffer( UINT width, UINT height
 /*******************************************************************
 * Shader Loader
 *******************************************************************/
-bool CDirectXManager::loadShadersAndCreateInputLayouts()
+bool CDirectXManager::CreateShader(_In_ const string filename, 
+								   _In_ vector<string> names, 
+								   _In_ vector<string> types, 
+								   _Out_ CEffect* &pEffect)
 {
-	if ( FAILED( D3DX10CreateEffectFromFile(	"basicEffect.fx", 
-												NULL, NULL, 
-												"fx_4_0", 
-												D3D10_SHADER_ENABLE_STRICTNESS, 
-												0, 
-												pD3DDevice, 
-												NULL, 
-												NULL, 
-												&pBasicEffect, 
-												NULL, 
-												NULL	) ) ) return fatalError("Could not load effect file!");	
-
-	pBasicTechnique = pBasicEffect->GetTechniqueByName("render");
-	if ( pBasicTechnique == NULL ) return fatalError("Could not find specified technique!");	
+	ID3D10Effect* pDXEffect;
+	ID3D10EffectTechnique* pDXTechnique;
+	D3D10_TECHNIQUE_DESC DXtechDesc;
+	if (FAILED(D3DX10CreateEffectFromFile(	filename.c_str(), 
+											NULL, NULL, 
+											"fx_4_0", 
+											D3D10_SHADER_ENABLE_STRICTNESS, 
+											0, 
+											pD3DDevice, 
+											NULL, 
+											NULL, 
+											&pDXEffect, 
+											NULL, 
+											NULL	))) 
+		return fatalError("Could not load effect file!");	
+	pDXTechnique = pDXEffect->GetTechniqueByName("render");
+	if ( pDXTechnique == NULL ) return fatalError("Could not find specified technique!");	
 	
-
-	//create matrix effect pointers
-	pViewMatrixEffectVariable = pBasicEffect->GetVariableByName( "View" )->AsMatrix();
-	pProjectionMatrixEffectVariable = pBasicEffect->GetVariableByName( "Projection" )->AsMatrix();
-	pWorldMatrixEffectVariable = pBasicEffect->GetVariableByName( "World" )->AsMatrix();	
 
 	//create input layout
 	D3D10_PASS_DESC PassDesc;
-	pBasicTechnique->GetPassByIndex( 0 )->GetDesc( &PassDesc );
+	pDXTechnique->GetPassByIndex( 0 )->GetDesc( &PassDesc );
 	if ( FAILED( pD3DDevice->CreateInputLayout( vertexInputLayout, 
 												2, 
 												PassDesc.pIAInputSignature,
@@ -247,7 +245,16 @@ bool CDirectXManager::loadShadersAndCreateInputLayouts()
 	pD3DDevice->IASetInputLayout( pVertexLayout );
 	
 	//get technique description
-	pBasicTechnique->GetDesc( &techDesc );
+	pDXTechnique->GetDesc( &DXtechDesc );
+
+	if (!pEffect)
+		delete pEffect;
+	pEffect = new CEffect(pDXEffect, pDXTechnique, DXtechDesc);
+
+	pEffect->Initialize(names, types);
+	//set shader matrices
+	pEffect->SetVariableByName("View", ViewMatrix);
+	pEffect->SetVariableByName("Projection", ProjectionMatrix);
 
 	return true;
 }
@@ -256,22 +263,31 @@ bool CDirectXManager::loadShadersAndCreateInputLayouts()
 // Type: Factory
 // Vis: Public
 // Desc: Wraps the DirectX Mesh creation function: D3DX10CreateMesh and
-// provides some of the inputs
+// provides some of the inputs. It deletes anything stored in the
+// pMesh pointer to make room for the new mesh.
 // Inputs:
-//	- vertices: A vector of vertices for 
+//	- vertices: A vector of the vertices in the mesh.
+//	- indices: A vector of the indices in the mesh.
+//	- NumFaces: The number of faces in the mesh.
+// Outputs:
+//	- pMesh: A pointer to the newly created mesh.
+//	- retval: false if the API calls failed.
+//-----------------------------------------------------------------------------
 bool CDirectXManager::CreateMesh(	_In_ vector<vertex> vertices,
 									_In_ vector<UINT> indices,
-									_In_ int NumFaces,
+									_In_ int numFaces,
 									_Out_ CMesh* &pMesh)
 {
 	ID3DX10Mesh* pDXMesh = NULL;
 	HRESULT result;
-	if ( FAILED(result = D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), NumFaces, D3DX10_MESH_32_BIT, &pDXMesh)))
+	if ( FAILED(result = D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), numFaces, D3DX10_MESH_32_BIT, &pDXMesh)))
 		return fatalError("Could not create mesh!");
 	//insert data into mesh and commit changes
 	pDXMesh->SetVertexData(0, &vertices[0]);
 	pDXMesh->SetIndexData(&indices[0], 36);
 	pDXMesh->CommitToDevice();
+	if (!pMesh)
+		delete pMesh;
 	pMesh = new CMesh(pDXMesh);
 	return true;
 }
@@ -287,7 +303,7 @@ void CDirectXManager::EndScene(void)
 /*******************************************************************
 * Scene Renderer
 *******************************************************************/
-void CDirectXManager::renderScene(CMesh* pMesh)
+void CDirectXManager::renderScene(CMesh* pMesh, CEffect* pEffect)
 {
 	//rotate object - rotation should be timer based but i'm lazy
 	CMatrix temp = CMatrix();
@@ -297,21 +313,22 @@ void CDirectXManager::renderScene(CMesh* pMesh)
 	D3DXVECTOR3 rcOrigin(-14, 0, 0);
 
 	//draw lots of cubes
-	for ( int cols = 0; cols < 10; cols++ )
+	for ( int cols = 0; cols < 8; cols++ )
 	{
-		for ( int rows = 0; rows < 15; rows ++ )
+		for ( int rows = 0; rows < 7; rows ++ )
 		{
 			//position cube
 			CMatrix::CreateMatrixRotationY(r,WorldMatrix);
 			CMatrix::CreateMatrixTranslation(rcOrigin.x + 4 * cols, 0, rcOrigin.z + 4 * rows,  temp);
 			WorldMatrix *= temp;
-			pWorldMatrixEffectVariable->SetMatrix(*WorldMatrix.GetD3DXMATRIX());
+			pEffect->SetVariableByName("World",WorldMatrix);
+			//pWorldMatrixEffectVariable->SetMatrix(WorldMatrix.GetD3DXMATRIX());
 
 			//draw cube
-			for( UINT p = 0; p < techDesc.Passes; p++ )
+			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
 			{
 				//apply technique
-				pBasicTechnique->GetPassByIndex( p )->Apply( 0 );
+				pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
 				pMesh->Draw();
 			}
 		}
