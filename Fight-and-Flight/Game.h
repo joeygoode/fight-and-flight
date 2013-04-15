@@ -1,8 +1,11 @@
 #pragma once
-#include "DirectXManager.h"
+#include "GFXAPIBase.h"
 using namespace std;
 
-class CMesh;
+#include "FontObj.h"
+#include "Matrix.h"
+
+class CMeshManager;
 
 class CGame
 {
@@ -18,8 +21,11 @@ private:
 	// dx manager
 	CDirectXManager* m_pDirectX;
 	// mesh
-	CMesh* m_pMesh;
+	CMeshManager* m_pMeshManager;
 	CEffect* m_pEffect;
-	ID3DX10Font* pDebugFont;
+	CFontObj DebugFont;
+	CMatrix	ViewMatrix;
+	CMatrix	ProjectionMatrix;
+	CMatrix	WorldMatrix;
 };
 

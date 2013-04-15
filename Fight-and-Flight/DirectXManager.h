@@ -13,15 +13,14 @@
 #include <windows.h>
 #include <d3d10.h>
 #include <d3dx10.h>
-
-#include "Matrix.h"
 #include <vector>
 using namespace std;
 
 #include "vertexTypes.h"
 
-class CMesh;
 class CEffect;
+class CMesh;
+class CFontObj;
 
 class CDirectXManager
 {
@@ -44,22 +43,17 @@ private:
 
 	//input layout and mesh
 	ID3D10InputLayout*			pVertexLayout;
-	/*
-	//effect variable pointers
-	ID3D10EffectMatrixVariable* pViewMatrixEffectVariable;
-	ID3D10EffectMatrixVariable* pProjectionMatrixEffectVariable;
-	ID3D10EffectMatrixVariable* pWorldMatrixEffectVariable;
-	*/
+
 	//projection and view matrices
-	
-	CMatrix						ViewMatrix;
-	CMatrix						ProjectionMatrix;
+
+
 
 	/*******************************************************************
 	* Methods
 	********************************************************************/	
 public:
-	CMatrix						WorldMatrix;
+	UINT width;
+	UINT height;
 	ID3DX10Sprite*				pSprite;
 	//constructor and destructor
 	CDirectXManager();
@@ -71,18 +65,17 @@ public:
 	//scene function
 	void BeginScene(void);
 	void EndScene(void);
-	void renderScene(CMesh* pMesh, CEffect* pEffect);	
 	bool CreateMesh(_In_ const vector<vertex>& vertices,
 					_In_ const vector<UINT>& indices,
 					_In_ int NumFaces,
-					_Out_ CMesh* &pMesh);
+					_In_ const string& MeshID,
+					_Out_ CMesh& pMesh);
 	bool CreateShader(	_In_ const string& filename,
 						_In_ const vector<string>& names,
 						_In_ const vector<string>& types,
 						_Out_ CEffect* &pOut);
-	ID3DX10Font* MakeFont(string name, int size);
-	void FontPrint(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color);
-	void ResetStates();
+	bool CreateFontObj(const string& name, int size, CFontObj* out);
+	void DrawFont(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color);
 private:
 
 	//initialization methods

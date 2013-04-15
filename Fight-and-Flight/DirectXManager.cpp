@@ -6,6 +6,7 @@ using namespace std;
 #include "Matrix.h"
 #include "Vector3.h"
 #include "Effect.h"
+#include "FontObj.h"
 
 /*******************************************************************
 * Constructor
@@ -18,9 +19,6 @@ CDirectXManager::CDirectXManager() :	pD3DDevice(NULL),
 										pDepthStencil(0)
 {
 	hWnd = NULL;
-	CMatrix::CreateIdentityMatrix(WorldMatrix);
-	CMatrix::CreateIdentityMatrix(ProjectionMatrix);
-	CMatrix::CreateIdentityMatrix(ViewMatrix);
 }
 /*******************************************************************
 * Destructor
@@ -46,8 +44,8 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 	//get window dimensions
 	RECT rc;
     GetClientRect( *hWnd, &rc );
-    UINT width = rc.right - rc.left;
-    UINT height = rc.bottom - rc.top;
+    width = rc.right - rc.left;
+    height = rc.bottom - rc.top;
 
 	// CREATE DEVICE
 	//*****************************************************************************
@@ -64,12 +62,7 @@ bool CDirectXManager::initialize(_In_ HWND* hW )
 	
 	// Set up the view and projection matrices
 	//*****************************************************************************
-	CVector3 camera[] = {	CVector3(0.0f, 5.0f, -10.0f),
-							CVector3(0.0f, 0.0f, 1.0f),
-							CVector3(0.0f, 1.0f, 0.0f)	};
-	
-	CMatrix::CreateMatrixLookAtLH(camera[0], camera[1], camera[2], ViewMatrix);		
-	CMatrix::CreateMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f, ProjectionMatrix);
+
 	
 	if(FAILED(D3DX10CreateSprite(pD3DDevice,16,&pSprite)))
 		return fatalError("Sprite failed.");
@@ -251,9 +244,7 @@ bool CDirectXManager::CreateShader(_In_ const string& filename,
 	pEffect = new CEffect(pDXEffect, pDXTechnique, DXtechDesc);
 
 	pEffect->Initialize(names, types);
-	//set shader matrices
-	pEffect->SetVariableByName("View", ViewMatrix);
-	pEffect->SetVariableByName("Projection", ProjectionMatrix);
+
 
 	return true;
 }
@@ -275,19 +266,16 @@ bool CDirectXManager::CreateShader(_In_ const string& filename,
 bool CDirectXManager::CreateMesh(	_In_ const vector<vertex>& vertices,
 									_In_ const vector<UINT>& indices,
 									_In_ int numFaces,
-									_Out_ CMesh* &pMesh)
+									_In_ const string& MeshID,
+									_Out_ CMesh &pMesh)
 {
-	ID3DX10Mesh* pDXMesh = NULL;
-	HRESULT result;
-	if ( FAILED(result = D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), numFaces, D3DX10_MESH_32_BIT, &pDXMesh)))
+	if ( FAILED(D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), numFaces, D3DX10_MESH_32_BIT, &pMesh.m_pDXMesh)))
 		return fatalError("Could not create mesh!");
 	//insert data into mesh and commit changes
-	pDXMesh->SetVertexData(0, &vertices[0]);
-	pDXMesh->SetIndexData(&indices[0], 36);
-	pDXMesh->CommitToDevice();
-	if (!pMesh)
-		delete pMesh;
-	pMesh = new CMesh(pDXMesh);
+	pMesh.m_pDXMesh->SetVertexData(0, &vertices[0]);
+	pMesh.m_pDXMesh->SetIndexData(&indices[0], 36);
+	pMesh.m_pDXMesh->CommitToDevice();
+	pMesh.m_ID = MeshID;
 	return true;
 }
 void CDirectXManager::BeginScene(void)
@@ -299,39 +287,6 @@ void CDirectXManager::EndScene(void)
 {
 	pSwapChain->Present(0,0);
 }
-/*******************************************************************
-* Scene Renderer
-*******************************************************************/
-void CDirectXManager::renderScene(CMesh* pMesh, CEffect* pEffect)
-{
-	//rotate object - rotation should be timer based but i'm lazy
-	CMatrix temp = CMatrix();
-	static float r = 0;	
-	r += 0.0001f;
-
-	D3DXVECTOR3 rcOrigin(-14, 0, 0);
-
-	//draw lots of cubes
-	for ( int cols = 0; cols < 10; cols++ )
-	{
-		for ( int rows = 0; rows < 15; rows ++ )
-		{
-			//position cube
-			CMatrix::CreateMatrixRotationY(r,WorldMatrix);
-			CMatrix::CreateMatrixTranslation(rcOrigin.x + 4 * cols, 0, rcOrigin.z + 4 * rows,  temp);
-			WorldMatrix *= temp;
-			pEffect->SetVariableByName("World",WorldMatrix);
-
-			//draw cube
-			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
-			{
-				//apply technique
-				pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-				pMesh->Draw();
-			}
-		}
-	}
-}
 
 /*******************************************************************
 * Fatal Error Handler
@@ -342,9 +297,10 @@ bool CDirectXManager::fatalError(const LPCSTR msg)
 	return false;
 }
 
-ID3DX10Font* CDirectXManager::MakeFont(string name, int size)
+bool CDirectXManager::CreateFontObj(const string& name, int size, CFontObj* Out)
 {
-	ID3DX10Font* font = NULL;
+	Out->m_pD3DDevice = pD3DDevice;
+	Out->m_pDXSprite = pSprite;
 	D3DX10_FONT_DESC desc = {
 		size,
 		0,
@@ -358,22 +314,8 @@ ID3DX10Font* CDirectXManager::MakeFont(string name, int size)
 		""
 	};
 	strcpy(desc.FaceName, name.c_str());
-	D3DX10CreateFontIndirect(pD3DDevice, &desc, &font);
-	return font;
-}
-
-void CDirectXManager::FontPrint(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color)
-{
-	ID3D10DepthStencilState* pDSState = NULL;
-	UINT reference;
-	pD3DDevice->OMGetDepthStencilState(&pDSState,&reference);
-	RECT rect = {x,y,0,0};
-	HRESULT result = font->DrawText(NULL,text.c_str(),text.length(),&rect,DT_CALCRECT,color);
-	result = font->DrawText(pSprite,text.c_str(),text.length(),&rect,DT_LEFT,color);
-	pD3DDevice->OMSetDepthStencilState(pDSState,reference);
-}
-
-void CDirectXManager::ResetStates()
-{
-
+	ID3DX10Font* pDXFont = NULL;
+	if (FAILED (D3DX10CreateFontIndirect(pD3DDevice, &desc, &Out->m_pDXFont)))
+		return false;
+	return true;
 }

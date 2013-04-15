@@ -1,6 +1,16 @@
 #include "Vector3.h"
 
 
+//-----------------------------------------------------------------------------
+// Name: CVector3
+// Type: Constructor
+// Vis: Public
+// Desc: Creates a new vector with the given values.
+// Inputs:
+//	- x: The x component of the new vector
+//	- y: The y component of the new vector
+//	- z: The z component of the new vector
+//-----------------------------------------------------------------------------
 CVector3::CVector3(float x, float y, float z)
 {
 #if (GRAPHICSAPI == DIRECTX10)
@@ -8,7 +18,12 @@ CVector3::CVector3(float x, float y, float z)
 #endif
 }
 
-
+//-----------------------------------------------------------------------------
+// Name: ~CVector3
+// Type: Destructor
+// Vis: Public
+// Desc: Destroys this vector.
+//-----------------------------------------------------------------------------
 CVector3::~CVector3(void)
 {
 }
@@ -53,11 +68,26 @@ float CVector3::GetZ(void) const
 #endif
 }
 
+//-----------------------------------------------------------------------------
+// Name: CVector3
+// Type: Constructor
+// Vis: Private
+// Desc: Wraps the given vector
+// Inputs:
+//	- DXVector: the vector to wrap
+//-----------------------------------------------------------------------------
 #if (GRAPHICSAPI == DIRECTX10)
 CVector3::CVector3(D3DXVECTOR3 DXVector)
 {
 	m_DXVector = DXVector;
 }
+//-----------------------------------------------------------------------------
+// Name: GetD3DXVECTOR3
+// Type: Getter
+// Vis: Private
+// Outputs:
+//	- retval: The wrapped vector
+//-----------------------------------------------------------------------------
 D3DXVECTOR3 CVector3::GetD3DXVECTOR3(void) const
 {
 	return m_DXVector;

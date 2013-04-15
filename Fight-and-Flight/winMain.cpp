@@ -114,6 +114,6 @@ int APIENTRY _tWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpC
 	
 		pGame->UpdateAndRender();
     }
-
+	delete pGame;
 	return (int) msg.wParam;
 }

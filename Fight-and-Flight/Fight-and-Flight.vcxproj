@@ -92,23 +92,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="EntityRenderer.cpp" />
+    <ClCompile Include="GFXAPIBase.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectVariable.cpp" />
+    <ClCompile Include="FontObj.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vector4.cpp" />
     <ClCompile Include="winMain.cpp" />
     <ClCompile Include="DirectXManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="DirectXManager.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="EntityRenderer.h" />
+    <ClInclude Include="GFXAPIBase.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectVariable.h" />
+    <ClInclude Include="FontObj.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshManager.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
     <ClInclude Include="vertexTypes.h" />

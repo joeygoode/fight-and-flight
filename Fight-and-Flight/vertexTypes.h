@@ -2,13 +2,13 @@
 struct vertex
 {
 	D3DXVECTOR3 pos;
-	D3DXVECTOR4 color;
+	D3DXCOLOR color;
 	
 	vertex ()
 	{		
 	}
 	
-	vertex( D3DXVECTOR3 p, D3DXVECTOR4 c )
+	vertex( D3DXVECTOR3 p, D3DXCOLOR c )
 	{
 		pos = p;
 		color = c;

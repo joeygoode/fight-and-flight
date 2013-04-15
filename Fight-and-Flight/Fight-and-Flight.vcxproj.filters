@@ -46,22 +46,43 @@
     <ClCompile Include="winMain.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Game Engine\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>Game Engine\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Game Engine\Source</Filter>
+    <ClCompile Include="Color.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
-      <Filter>Game Engine\Source</Filter>
+      <Filter>DirectX 10 Wrapper\Source</Filter>
     </ClCompile>
     <ClCompile Include="EffectVariable.cpp">
-      <Filter>Game Engine\Source</Filter>
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FontObj.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
     </ClCompile>
     <ClCompile Include="Vector4.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GFXAPIBase.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityRenderer.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshManager.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,22 +96,43 @@
     <ClInclude Include="Game.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Game Engine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
-      <Filter>Game Engine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Game Engine\Headers</Filter>
+    <ClInclude Include="Color.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>Game Engine\Headers</Filter>
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
     </ClInclude>
     <ClInclude Include="EffectVariable.h">
-      <Filter>Game Engine\Headers</Filter>
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="FontObj.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Vector4.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXAPIBase.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityRenderer.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshManager.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

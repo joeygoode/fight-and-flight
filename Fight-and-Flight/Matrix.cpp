@@ -1,130 +1,161 @@
 #include "Matrix.h"
 #include "Vector3.h"
 
-
+//-----------------------------------------------------------------------------
+// Name: ~CMatrix
+// Type: Destructor
+// Vis: Public
+// Desc: Destroy this CMatrix
+//-----------------------------------------------------------------------------
 CMatrix::~CMatrix(void)
 {
 }
 
+// Use these versions of functions if we're using DirectX 10
 #if (GRAPHICSAPI == DIRECTX10)
+//-----------------------------------------------------------------------------
+// Name: CMatrix
+// Type: Constructor
+// Vis: Public
+// Desc: Create a new CMatrix and make it the identity matrix.
+//-----------------------------------------------------------------------------
 CMatrix::CMatrix(void)
 {
-	m_DXMatrix = D3DXMATRIX();
+	D3DXMatrixIdentity(&m_DXMatrix);
 }
+//-----------------------------------------------------------------------------
+// Name: CMatrix
+// Type: Constructor
+// Vis: Private
+// Desc: Construct a new CMatrix and make it equal to the given matrix.
+// Inputs:
+//	- DXMatrix:  A D3DXMATRIX to wrap.
+//-----------------------------------------------------------------------------
 CMatrix::CMatrix(D3DXMATRIX DXMatrix)
 {
 	m_DXMatrix = DXMatrix;
 }
 
+//-----------------------------------------------------------------------------
+// Name: GetD3DXMATRIX
+// Type: Getter
+// Vis: Private
+// Desc: Get the wrapped D3DXMATRIX
+// Inputs:
+//	- DXMatrix:  A D3DXMATRIX to wrap.
+// Outputs:
+//	- retval: The wrapped D3DXMATRIX
+//-----------------------------------------------------------------------------
 D3DXMATRIX CMatrix::GetD3DXMATRIX(void) const
 {
 	return m_DXMatrix;
 }
 
+//-----------------------------------------------------------------------------
+// Name: operator*=
+// Type: Method
+// Vis: Public
+// Desc: Multiply the two matricies and set the result equal to the left hand
+//		 side
+// Inputs:
+//	- that:  the CMatrix to multiply by.
+// Outputs:
+//	- retval: this CMatrix, for operator chaining.
+//-----------------------------------------------------------------------------
 CMatrix CMatrix::operator*=(const CMatrix& that)
 {
 	m_DXMatrix *= that.GetD3DXMATRIX();
 	return *this;
 }
-
+//-----------------------------------------------------------------------------
+// Name: operator*
+// Type: Method
+// Vis: Public
+// Desc: Multiply the two matricies and put the result in a new matrix.
+// Inputs:
+//	- that: A CMatrix to multiply by.
+// Outputs:
+//	- retval: the new CMatrix, for operaor chaining.
+//-----------------------------------------------------------------------------
 CMatrix CMatrix::operator*(const CMatrix& that)
 {
 	return CMatrix(m_DXMatrix * that.GetD3DXMATRIX());
 
 }
-
-void CMatrix::CreateIdentityMatrix(_Out_ CMatrix& pOut)
+//-----------------------------------------------------------------------------
+// Name: CMatrix
+// Type: Builder
+// Vis: Public
+// Desc: Reset the input matrix
+//-----------------------------------------------------------------------------
+void CMatrix::SetIdentityMatrix(void)
 {
-	D3DXMATRIX DXMatrix;
-	D3DXMatrixIdentity(&DXMatrix);
-	pOut.m_DXMatrix = DXMatrix;
+	D3DXMatrixIdentity(&m_DXMatrix);
 }
 
 //-----------------------------------------------------------------------------
 // Name: CreateMatrixLookAtLH
-// Type: Factory
+// Type: Builder
 // Vis: Public
-// Desc: Creates a Look At matrix through the DirectX Math Library.
+// Desc: Makes this a LH Look At matrix 
 // Inputs:
-//	- pEye: Position vector
-//	- pAt: Toward vector
-//	- pUp: Up vector (usually can be (0,1,0)
-// Outputs:
-//	- pOut: A CMatrix to store the new matrix in
+//	- Eye: Position vector
+//	- At: Toward vector
+//	- Up: Up vector (usually can be (0,1,0)
 //-----------------------------------------------------------------------------
-void CMatrix::CreateMatrixLookAtLH(	_In_ const CVector3& pEye,
-									_In_ const CVector3& pAt,
-									_In_ const CVector3& pUp,
-									_Out_ CMatrix& pOut)
+void CMatrix::SetMatrixLookAtLH(	_In_ const CVector3& Eye,
+									_In_ const CVector3& At,
+									_In_ const CVector3& Up)
 {
-	D3DXMATRIX DXMatrix;
-	D3DXVECTOR3 eye = D3DXVECTOR3(pEye.GetD3DXVECTOR3());
-	D3DXVECTOR3 at = D3DXVECTOR3(pAt.GetD3DXVECTOR3());
-	D3DXVECTOR3 up = D3DXVECTOR3(pUp.GetD3DXVECTOR3());
-	D3DXMatrixLookAtLH(&DXMatrix, &eye, &at, &up);
-	pOut.m_DXMatrix = DXMatrix;
+	D3DXMatrixLookAtLH(&m_DXMatrix, &Eye.GetD3DXVECTOR3(), &At.GetD3DXVECTOR3(), &Up.GetD3DXVECTOR3());
 }
 
 //-----------------------------------------------------------------------------
 // Name: CreateMatrixPerspectiveFovLH
-// Type: Factory
+// Type: Builder
 // Vis: Public
-// Desc: Creates a perspective projection matrix through the DirectX Math 
-//		 Library.
+// Desc: Makes this a LH perspective projection matrix
 // Inputs:
 //	- vFov: vertical field of view
 //	- aspectRatio: aspect ratio of the vew plane
 //	- zNearPlane: z distance to the near plane
 //	- zFarPlane: z distance to the far plane
-// Outputs:
-//	- pOut: A CMatrix to store the new matrix in
 //-----------------------------------------------------------------------------
-void CMatrix::CreateMatrixPerspectiveFovLH(	_In_ float vFov,
+void CMatrix::SetMatrixPerspectiveFovLH(	_In_ float vFov,
 											_In_ float aspectRatio,
 											_In_ float zNearPlane,
-											_In_ float zFarPlane,
-											_Out_ CMatrix& pOut)
+											_In_ float zFarPlane)
 {
-	D3DXMATRIX DXMatrix;
-	D3DXMatrixPerspectiveFovLH(&DXMatrix, vFov, aspectRatio, zNearPlane, zFarPlane);
-	pOut.m_DXMatrix = DXMatrix;
+	D3DXMatrixPerspectiveFovLH(&m_DXMatrix, vFov, aspectRatio, zNearPlane, zFarPlane);
 }
 
 //-----------------------------------------------------------------------------
 // Name: CreateMatrixRotationY
 // Type: Factory
 // Vis: Public
-// Desc: Creates matrix that rotates around Y through the DirectX Math Library.
+// Desc: Makes this a matrix that rotates around Y by angle
 // Inputs:
 //	- angle: the angle to rotate around the Y axis
-// Outputs:
-//	- pOut: A CMatrix to store the new matrix in
 //-----------------------------------------------------------------------------
-void CMatrix::CreateMatrixRotationY(_In_ float angle,
-									_Out_ CMatrix& pOut)
+void CMatrix::SetMatrixRotationY(_In_ float angle)
 {
-	D3DXMATRIX DXMatrix;
-	D3DXMatrixRotationY(&DXMatrix, angle);
-	pOut.m_DXMatrix = DXMatrix;
+	D3DXMatrixRotationY(&m_DXMatrix, angle);
 }
 //-----------------------------------------------------------------------------
 // Name: CreateMatrixTranslation
-// Type: Factory
+// Type: Builder
 // Vis: Public
-// Desc: Creates a translation matrix through the DirectX Math Library.
+// Desc: Makes this a translation matrix
 // Inputs:
 //	- x: distance in x to translate
 //	- y: distance in y to translate
 //	- z: distance in z to translate
-// Outputs:
-//	- pOut: A CMatrix to store the new matrix in
 //-----------------------------------------------------------------------------
-void CMatrix::CreateMatrixTranslation(	_In_ float x,
-										_In_ float y,
-										_In_ float z,
-										_Out_ CMatrix& Out)
+void CMatrix::SetMatrixTranslation(	_In_ float x,
+									_In_ float y,
+									_In_ float z)
 {
-	D3DXMatrixTranslation(&Out.m_DXMatrix, x, y, z);
+	D3DXMatrixTranslation(&m_DXMatrix, x, y, z);
 }
 
 #endif
