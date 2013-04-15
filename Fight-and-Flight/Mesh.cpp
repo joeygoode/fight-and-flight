@@ -4,7 +4,8 @@
 // Name: GetID
 // Type: Getter
 // Vis: Public
-// Desc: Get the unique ID for this Mesh
+// Output:
+//	- retval: The unique ID for this Mesh
 //-----------------------------------------------------------------------------
 const string& CMesh::GetID(void) const
 {
@@ -12,6 +13,12 @@ const string& CMesh::GetID(void) const
 }
 
 #if (GRAPHICSAPI == DIRECTX10)
+//-----------------------------------------------------------------------------
+// Name: CMesh
+// Type: Constructor
+// Vis: Public
+// Desc: Create a new mesh.
+//-----------------------------------------------------------------------------
 CMesh::CMesh(void)
 {
 	m_pDXMesh = NULL;
@@ -30,19 +37,6 @@ CMesh::~CMesh(void)
 }
 
 //-----------------------------------------------------------------------------
-// Name: CMesh
-// Type: Constructor
-// Vis: Private
-// Desc: Construct a new CMesh using a DXMesh as a base, with the given ID.
-//		 IDs should be UNIQUE!  Best case use the filename!
-//-----------------------------------------------------------------------------
-CMesh::CMesh(ID3DX10Mesh* pDXMesh, string ID)
-{
-	m_pDXMesh = pDXMesh;
-	m_ID = ID;
-}
-
-//-----------------------------------------------------------------------------
 // Name: Draw
 // Type: Method
 // Vis: Public
@@ -51,5 +45,19 @@ CMesh::CMesh(ID3DX10Mesh* pDXMesh, string ID)
 void CMesh::Draw(void) const
 {
 	m_pDXMesh->DrawSubset(0);
+}
+
+//-----------------------------------------------------------------------------
+// Name: Clear
+// Type: Method
+// Vis: Public
+// Desc: Release the held mesh, if present, and reset all data so that it can
+// be reallocated.
+//-----------------------------------------------------------------------------
+void CMesh::Clear(void)
+{
+	if (m_pDXMesh)
+		m_pDXMesh->Release();
+	m_ID.clear();
 }
 #endif

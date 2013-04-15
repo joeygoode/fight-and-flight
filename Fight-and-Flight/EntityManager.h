@@ -34,13 +34,17 @@ class CEntityManager
 	int m_HighestAssigned;
 	vector<CEntity>* m_pEntities;
 	vector<CEntityRenderer>* m_pRenderers;
+	static CEntityManager* s_Singleton;
 public:
-	CEntityManager(void);
-	~CEntityManager(void);
+	static CEntityManager* Get(void);
+	static void Clear(void);
 	// Assigns a new entity from the pool.  Ensures that it's position
 	// in other vectors has been reset.
 	bool AllocateEntity(ENTITY_DESC desc);
 	// Passes the physics vector and updates each entity.
-	void DrawAllEntities(void);
+	void DrawAllEntities(void) const;
+private:
+	CEntityManager(void);
+	~CEntityManager(void);
 };
 

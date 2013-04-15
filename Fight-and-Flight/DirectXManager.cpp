@@ -8,6 +8,22 @@ using namespace std;
 #include "Effect.h"
 #include "FontObj.h"
 
+CDirectXManager* CDirectXManager::s_Singleton = NULL;
+
+CDirectXManager* CDirectXManager::Get()
+{
+	if (!s_Singleton)
+		s_Singleton = new CDirectXManager();
+	return s_Singleton;
+}
+
+void CDirectXManager::Clear()
+{
+	if (s_Singleton)
+		delete s_Singleton;
+	s_Singleton = NULL;
+}
+
 /*******************************************************************
 * Constructor
 *******************************************************************/

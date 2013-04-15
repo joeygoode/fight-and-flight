@@ -1,5 +1,6 @@
 #include <sstream>
 #include <Windows.h>
+#include <iostream>
 using namespace std;
 
 #include "Game.h"
@@ -8,6 +9,7 @@ using namespace std;
 #include "Color.h"
 #include "Vector3.h"
 #include "MeshManager.h"
+#include "EntityManager.h"
 
 //-----------------------------------------------------------------------------
 // Name: CGame
@@ -17,8 +19,6 @@ using namespace std;
 //-----------------------------------------------------------------------------
 CGame::CGame(void)
 {
-	m_pDirectX = NULL;
-	m_pMeshManager = NULL;
 	m_pEffect = NULL;
 }
 
@@ -30,9 +30,9 @@ CGame::CGame(void)
 //-----------------------------------------------------------------------------
 CGame::~CGame(void)
 {
-	delete m_pDirectX;
-	delete m_pMeshManager;
 	delete m_pEffect;
+	CDirectXManager::Clear();
+	CMeshManager::Clear();
 }
 	
 //-------------------------------------------------------------------------
@@ -49,8 +49,8 @@ CGame::~CGame(void)
 bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 {
 	pGame = new CGame();
-	pGame->m_pDirectX = new CDirectXManager();
-	if (!pGame->m_pDirectX->initialize(hWnd))
+	CDirectXManager* pDirectX = CDirectXManager::Get();
+	if (!pDirectX->initialize(hWnd))
 		return false;
 
 	vector<string> names = vector<string>(3);
@@ -61,7 +61,7 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	for (int i = 0; i < 3; i++)
 		types[i] = "matrix";
 
-	if(!pGame->m_pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
+	if(!pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
 		return false;
 
 	CVector3 camera[] = {	CVector3(0.0f, 5.0f, -10.0f),
@@ -69,23 +69,21 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 							CVector3(0.0f, 1.0f, 0.0f)	};
 	
 	pGame->ViewMatrix.SetMatrixLookAtLH(camera[0], camera[1], camera[2]);		
-	pGame->ProjectionMatrix.SetMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)pGame->m_pDirectX->width/(float)pGame->m_pDirectX->height, 0.1f, 100.0f);
+	pGame->ProjectionMatrix.SetMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)pDirectX->width/(float)pDirectX->height, 0.1f, 100.0f);
 
 	pGame->m_pEffect->SetVariableByName("View", pGame->ViewMatrix);
 	pGame->m_pEffect->SetVariableByName("Projection", pGame->ProjectionMatrix);
 
-	pGame->m_pMeshManager = new CMeshManager(pGame->m_pDirectX);
-
 	vector<vertex> vertices = vector<vertex>();
 	vertices.push_back(vertex( D3DXVECTOR3(-1,1,-1), D3DXCOLOR(1,0,0,1)));	//front top left
-	vertices.push_back(vertex( D3DXVECTOR3(1,1,-1), D3DXCOLOR(0,1,0,1)));		//front top right
+	vertices.push_back(vertex( D3DXVECTOR3(1,1,-1), D3DXCOLOR(0,1,0,1)));	//front top right
 	vertices.push_back(vertex( D3DXVECTOR3(-1,-1,-1), D3DXCOLOR(0,0,1,1)));	//front bottom left
 	vertices.push_back(vertex( D3DXVECTOR3(1,-1,-1), D3DXCOLOR(1,1,0,1)));	//front bottom right
 
-	vertices.push_back(vertex( D3DXVECTOR3(-1,1,1), D3DXCOLOR(1,0,0,1)));		//back top left
-	vertices.push_back(vertex( D3DXVECTOR3(1,1,1), D3DXCOLOR(0,1,0,1)));		//back top right
+	vertices.push_back(vertex( D3DXVECTOR3(-1,1,1), D3DXCOLOR(1,0,0,1)));	//back top left
+	vertices.push_back(vertex( D3DXVECTOR3(1,1,1), D3DXCOLOR(0,1,0,1)));	//back top right
 	vertices.push_back(vertex( D3DXVECTOR3(-1,-1,1), D3DXCOLOR(0,0,1,1)));	//back bottom left
-	vertices.push_back(vertex( D3DXVECTOR3(1,-1,1), D3DXCOLOR(1,1,0,1)));		//back bottom right
+	vertices.push_back(vertex( D3DXVECTOR3(1,-1,1), D3DXCOLOR(1,1,0,1)));	//back bottom right
 
 	//create indexes for a cube 
 	unsigned int i[36] = {	2,0,3,3,1,0,							
@@ -96,9 +94,12 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 							6,2,7,7,3,2 };	
 	vector<UINT> indices = vector<UINT>();
 	indices.assign(i,i+36);
-	if (!pGame->m_pMeshManager->AllocateMesh(vertices,indices,6,"cube"))
+	if (!CMeshManager::Get()->AllocateMesh(vertices,indices,6,"cube"))
 		return false;
-	pGame->m_pDirectX->CreateFontObj("Arial", 14,&pGame->DebugFont);
+	ENTITY_DESC desc = { "Cube1", "cube" };
+	if (!CEntityManager::Get()->AllocateEntity(desc))
+		return false;
+	pDirectX->CreateFontObj("Arial", 14,&pGame->DebugFont);
 	return true;
 }
 	
@@ -111,9 +112,18 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 bool CGame::UpdateAndRender(void)
 {
 	int time = timeGetTime();
-	m_pDirectX->BeginScene();
+	CDirectXManager* pDirectX = CDirectXManager::Get();
+	pDirectX->BeginScene();
+	m_pEffect->SetVariableByName("World",WorldMatrix);
+	//draw cube
+	for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
+	{
+		//apply technique
+		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
+		CEntityManager::Get()->DrawAllEntities();
+	}
 		//rotate object - rotation should be timer based but i'm lazy
-	
+	/*
 	CMatrix temp = CMatrix();
 	static float r = 0;	
 	r += 0.001f;
@@ -136,17 +146,18 @@ bool CGame::UpdateAndRender(void)
 			{
 				//apply technique
 				m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-				m_pMeshManager->DrawMeshByID("cube");
+				CMeshManager::Get()->DrawMeshByID("cube");
 			}
 		}
 	}
+	*/
 	time = timeGetTime() - time;
 	ostringstream convert;
 	convert << time;
-	m_pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
+	pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
 	DebugFont.Draw(20,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
-	m_pDirectX->pSprite->Flush();
-	m_pDirectX->pSprite->End();
-	m_pDirectX->EndScene();
+	pDirectX->pSprite->Flush();
+	pDirectX->pSprite->End();
+	pDirectX->EndScene();
 	return true;
 }

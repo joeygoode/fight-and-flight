@@ -8,7 +8,7 @@ class CEntityRenderer
 public:
 	CEntityRenderer(void);
 	~CEntityRenderer(void);
-	void Clear();
 	void SetMeshID(string MeshID);
+	void Draw(void) const;
 };
 

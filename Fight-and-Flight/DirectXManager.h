@@ -44,8 +44,7 @@ private:
 	//input layout and mesh
 	ID3D10InputLayout*			pVertexLayout;
 
-	//projection and view matrices
-
+	static CDirectXManager* s_Singleton;
 
 
 	/*******************************************************************
@@ -56,8 +55,10 @@ public:
 	UINT height;
 	ID3DX10Sprite*				pSprite;
 	//constructor and destructor
-	CDirectXManager();
-	~CDirectXManager();
+
+	
+	static CDirectXManager* Get();
+	static void Clear();
 
 	//initialize directx device
 	bool initialize(_In_ HWND*);	
@@ -77,7 +78,8 @@ public:
 	bool CreateFontObj(const string& name, int size, CFontObj* out);
 	void DrawFont(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color);
 private:
-
+	CDirectXManager();
+	~CDirectXManager();
 	//initialization methods
 	bool createSwapChainAndDevice( UINT width, UINT height );
 	void createViewports( UINT width, UINT height );

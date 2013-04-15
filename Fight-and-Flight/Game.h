@@ -18,10 +18,6 @@ public:
 	bool UpdateAndRender(void);
 private:
 	CGame(void);
-	// dx manager
-	CDirectXManager* m_pDirectX;
-	// mesh
-	CMeshManager* m_pMeshManager;
 	CEffect* m_pEffect;
 	CFontObj DebugFont;
 	CMatrix	ViewMatrix;
