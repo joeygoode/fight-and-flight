@@ -96,9 +96,19 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	indices.assign(i,i+36);
 	if (!CMeshManager::Get()->AllocateMesh(vertices,indices,6,"cube"))
 		return false;
-	ENTITY_DESC desc = { "Cube1", "cube" };
-	if (!CEntityManager::Get()->AllocateEntity(desc))
-		return false;
+	CVector3 rcOrigin = CVector3(-14, 0, 0);
+
+	for ( int cols = 0; cols < 10; cols++ )
+	{
+		for ( int rows = 0; rows < 15; rows ++ )
+		{
+			//position cube
+			CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
+			ENTITY_DESC desc = { "Cube1", "cube", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1) };
+			if (!CEntityManager::Get()->AllocateEntity(desc))
+				return false;
+		}
+	}
 	pDirectX->CreateFontObj("Arial", 14,&pGame->DebugFont);
 	return true;
 }
@@ -120,7 +130,7 @@ bool CGame::UpdateAndRender(void)
 	{
 		//apply technique
 		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-		CEntityManager::Get()->DrawAllEntities();
+		CEntityManager::Get()->DrawAllEntities(m_pEffect);
 	}
 		//rotate object - rotation should be timer based but i'm lazy
 	/*

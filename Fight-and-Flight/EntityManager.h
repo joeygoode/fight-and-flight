@@ -4,16 +4,20 @@ using std::vector;
 #include <string>
 using std::string;
 
-//#include "Entity.h"
-
+#include "Vector3.h"
 struct ENTITY_DESC
 {
 	string name;
 	string mesh_id;
+	CVector3 position;
+	CVector3 orientation;
+	CVector3 scale;
 };
 
 class CEntity;
 class CEntityRenderer;
+class CEntityTransform;
+class CEffect;
 
 //-----------------------------------------------------------------------------
 // Name: CEntityManager
@@ -34,6 +38,7 @@ class CEntityManager
 	int m_HighestAssigned;
 	vector<CEntity>* m_pEntities;
 	vector<CEntityRenderer>* m_pRenderers;
+	vector<CEntityTransform>* m_pTransforms;
 	static CEntityManager* s_Singleton;
 public:
 	static CEntityManager* Get(void);
@@ -42,7 +47,9 @@ public:
 	// in other vectors has been reset.
 	bool AllocateEntity(ENTITY_DESC desc);
 	// Passes the physics vector and updates each entity.
-	void DrawAllEntities(void) const;
+	void DrawAllEntities(CEffect* pEffect) const;
+	bool KillByName(const string& name);
+	int Compact(void);
 private:
 	CEntityManager(void);
 	~CEntityManager(void);

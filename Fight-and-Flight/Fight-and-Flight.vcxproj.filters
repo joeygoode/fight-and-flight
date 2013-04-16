@@ -85,6 +85,9 @@
     <ClCompile Include="MeshManager.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="EntityTransform.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXManager.h">
@@ -133,6 +136,9 @@
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="MeshManager.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityTransform.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

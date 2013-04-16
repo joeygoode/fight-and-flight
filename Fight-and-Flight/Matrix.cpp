@@ -158,4 +158,9 @@ void CMatrix::SetMatrixTranslation(	_In_ float x,
 	D3DXMatrixTranslation(&m_DXMatrix, x, y, z);
 }
 
+void CMatrix::SetTransformationMatrix(_In_ const CVector3& scale,
+									  _In_ const CVector3& translation)
+{
+	D3DXMatrixTransformation(&m_DXMatrix,NULL,NULL,&scale.GetD3DXVECTOR3(),NULL,NULL,&translation.GetD3DXVECTOR3());
+}
 #endif
