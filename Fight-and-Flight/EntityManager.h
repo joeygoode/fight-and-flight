@@ -12,11 +12,14 @@ struct ENTITY_DESC
 	CVector3 position;
 	CVector3 orientation;
 	CVector3 scale;
+	CVector3 velocity;
+	CVector3 rotationalvelocity;
 };
 
 class CEntity;
 class CEntityRenderer;
 class CEntityTransform;
+class CEntityPhysics;
 class CEffect;
 
 //-----------------------------------------------------------------------------
@@ -39,6 +42,7 @@ class CEntityManager
 	vector<CEntity>* m_pEntities;
 	vector<CEntityRenderer>* m_pRenderers;
 	vector<CEntityTransform>* m_pTransforms;
+	vector<CEntityPhysics>* m_pPhysics;
 	static CEntityManager* s_Singleton;
 public:
 	static CEntityManager* Get(void);
@@ -47,7 +51,7 @@ public:
 	// in other vectors has been reset.
 	bool AllocateEntity(ENTITY_DESC desc);
 	// Passes the physics vector and updates each entity.
-	void DrawAllEntities(CEffect* pEffect) const;
+	bool ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const;
 	bool KillByName(const string& name);
 	int Compact(void);
 private:

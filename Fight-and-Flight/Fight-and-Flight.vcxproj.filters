@@ -88,6 +88,12 @@
     <ClCompile Include="EntityTransform.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>DirectX 10 Wrapper\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityPhysics.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXManager.h">
@@ -139,6 +145,12 @@
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="EntityTransform.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>DirectX 10 Wrapper\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityPhysics.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

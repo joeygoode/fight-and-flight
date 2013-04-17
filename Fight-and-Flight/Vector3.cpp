@@ -173,6 +173,11 @@ CVector3 CVector3::operator*=(float f)
 	return *this;
 }
 
+CVector3 CVector3::operator*(float f)
+{
+	return CVector3(m_DXVector * f);
+}
+
 CVector3 CVector3::operator%(float f)
 {
 	int div = (int) m_DXVector.x / f;

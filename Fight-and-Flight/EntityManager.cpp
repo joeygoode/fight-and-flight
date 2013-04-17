@@ -5,6 +5,7 @@ using std::queue;
 #include "Entity.h"
 #include "EntityRenderer.h"
 #include "EntityTransform.h"
+#include "EntityPhysics.h"
 #include "Effect.h"
 #include "Matrix.h"
 
@@ -31,6 +32,7 @@ CEntityManager::CEntityManager(void)
 	m_pEntities = new vector<CEntity>(m_MaxEntities);
 	m_pRenderers = new vector<CEntityRenderer>(m_MaxEntities);
 	m_pTransforms = new vector<CEntityTransform>(m_MaxEntities);
+	m_pPhysics = new vector<CEntityPhysics>(m_MaxEntities);
 }
 
 
@@ -39,6 +41,7 @@ CEntityManager::~CEntityManager(void)
 	delete m_pEntities;
 	delete m_pRenderers;
 	delete m_pTransforms;
+	delete m_pPhysics;
 }
 
 bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
@@ -53,6 +56,8 @@ bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
 			(*m_pTransforms)[i].SetPosition(desc.position);
 			(*m_pTransforms)[i].SetOrientation(desc.orientation);
 			(*m_pTransforms)[i].SetScale(desc.scale);
+			(*m_pPhysics)[i].SetVelocity(desc.velocity);
+			(*m_pPhysics)[i].SetRotationalVelocity(desc.rotationalvelocity);
 			++m_HighestAssigned;
 			return true;
 		}
@@ -60,20 +65,25 @@ bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
 	return false;
 }
 
-void CEntityManager::DrawAllEntities(CEffect* pEffect) const
+bool CEntityManager::ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const
 {
+	if (ElapsedTime <= 0)
+		ElapsedTime = .001;
+
 	for(int i = 0; i < m_HighestAssigned; i++)
 	{
 		if (!(*m_pEntities)[i].GetName().empty())
-			pEffect->SetVariableByName("World",(*m_pTransforms)[i].GetMatrix());
-		//draw cube
-		for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
 		{
-			//apply technique
-			pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-			(*m_pRenderers)[i].Draw();
+			(*m_pPhysics)[i].Update(ElapsedTime,&(*m_pTransforms)[i]);
+			pEffect->SetVariableByName("World",(*m_pTransforms)[i].GetMatrix());
+			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
+			{
+				pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
+				(*m_pRenderers)[i].Draw();
+			}
 		}
 	}
+	return true;
 }
 
 bool CEntityManager::KillByName(const string& name)

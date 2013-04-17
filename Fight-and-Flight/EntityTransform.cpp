@@ -15,7 +15,7 @@ const CVector3& CEntityTransform::GetPosition(void) const
 	return m_Position;
 }
 
-const CVector3& CEntityTransform::GetOrientation(void) const
+const CQuaternion& CEntityTransform::GetOrientation(void) const
 {
 	return m_Orientation;
 }
@@ -37,14 +37,12 @@ void CEntityTransform::Translate(const CVector3& vec)
 
 void CEntityTransform::Rotate(float x, float y, float z)
 {
-	m_Orientation += CVector3(x,y,z);
-	m_Orientation % 360;
+	m_Orientation *= CQuaternion().SetPitchYawRoll(CVector3(x,y,z));
 }
 
 void CEntityTransform::Rotate(const CVector3& vec)
 {
-	m_Orientation += vec;
-	m_Orientation % 360;
+	m_Orientation *= CQuaternion().SetPitchYawRoll(vec);
 }
 
 void CEntityTransform::Scale(float x, float y, float z)
@@ -75,14 +73,12 @@ void CEntityTransform::SetPosition(const CVector3& vec)
 
 void CEntityTransform::SetOrienation(float x, float y, float z)
 {
-	m_Orientation.SetX(x);
-	m_Orientation.SetY(y);
-	m_Orientation.SetZ(z);
+	m_Orientation.SetPitchYawRoll(CVector3(x,y,z));
 }
 
 void CEntityTransform::SetOrientation(const CVector3& vec)
 {
-	m_Orientation.Set(vec);
+	m_Orientation.SetPitchYawRoll(vec);
 }
 
 void CEntityTransform::SetScale(float x, float y, float z)
@@ -100,6 +96,6 @@ void CEntityTransform::SetScale(const CVector3& vec)
 CMatrix CEntityTransform::GetMatrix(void)
 {
 	CMatrix matrix = CMatrix();
-	matrix.SetTransformationMatrix(m_Scale,m_Position);
+	matrix.SetTransformationMatrix(m_Scale,m_Orientation,m_Position);
 	return matrix;
 }

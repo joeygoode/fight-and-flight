@@ -9,6 +9,13 @@ class CMeshManager;
 
 class CGame
 {
+	CEffect* m_pEffect;
+	CFontObj DebugFont;
+	CMatrix	ViewMatrix;
+	CMatrix	ProjectionMatrix;
+	CMatrix	WorldMatrix;
+	int		m_CurrentTime;
+	int		m_PreviousTime;
 public:
 
 	static bool CreateGame(_In_ HWND* hWnd, _Out_ CGame* &Game);
@@ -18,10 +25,6 @@ public:
 	bool UpdateAndRender(void);
 private:
 	CGame(void);
-	CEffect* m_pEffect;
-	CFontObj DebugFont;
-	CMatrix	ViewMatrix;
-	CMatrix	ProjectionMatrix;
-	CMatrix	WorldMatrix;
+
 };
 

@@ -7,6 +7,7 @@ class CVector3 : CGFXAPIBase
 public:
 	CVector3 operator+=(const CVector3& that);
 	CVector3 operator*=(float f);
+	CVector3 operator*(float f);
 	CVector3 operator%(float f);
 	// Construct a new 3D vector (all data is 0)
 	CVector3(void);

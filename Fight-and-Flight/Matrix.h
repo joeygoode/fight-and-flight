@@ -28,6 +28,7 @@ public:
 							const CVector3& Up);
 	// Stores a transformation matrix in the given matrix.
 	void SetTransformationMatrix(	const CVector3& scale,
+									const CQuaternion& orientation,
 									const CVector3& translation);
 	// *= operator overload.  Defaults to the wrapped implemations *= overload.
 	CMatrix operator*=(const CMatrix& that);

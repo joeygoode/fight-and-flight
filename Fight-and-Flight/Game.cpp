@@ -104,12 +104,13 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 		{
 			//position cube
 			CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
-			ENTITY_DESC desc = { "Cube1", "cube", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1) };
+			ENTITY_DESC desc = { "Cube1", "cube", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,-.5f), CVector3(0, 3.14,0) };
 			if (!CEntityManager::Get()->AllocateEntity(desc))
 				return false;
 		}
 	}
 	pDirectX->CreateFontObj("Arial", 14,&pGame->DebugFont);
+	pGame->m_CurrentTime = timeGetTime();
 	return true;
 }
 	
@@ -121,51 +122,24 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 //-----------------------------------------------------------------------------
 bool CGame::UpdateAndRender(void)
 {
-	int time = timeGetTime();
 	CDirectXManager* pDirectX = CDirectXManager::Get();
 	pDirectX->BeginScene();
-	m_pEffect->SetVariableByName("World",WorldMatrix);
+	m_PreviousTime = m_CurrentTime;
+	m_CurrentTime = timeGetTime();
 	//draw cube
 	for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
 	{
 		//apply technique
 		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-		CEntityManager::Get()->DrawAllEntities(m_pEffect);
+		CEntityManager::Get()->ProcessAllEntities((float) (m_CurrentTime - m_PreviousTime) / 1000.0f,m_pEffect);
 	}
-		//rotate object - rotation should be timer based but i'm lazy
-	/*
-	CMatrix temp = CMatrix();
-	static float r = 0;	
-	r += 0.001f;
-
-	CVector3 rcOrigin(-14, 0, 0);
-
-	//draw lots of cubes
-	for ( int cols = 0; cols < 10; cols++ )
-	{
-		for ( int rows = 0; rows < 15; rows ++ )
-		{
-			//position cube
-			WorldMatrix.SetMatrixRotationY(r);
-			temp.SetMatrixTranslation(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
-			WorldMatrix *= temp;
-			m_pEffect->SetVariableByName("World",WorldMatrix);
-
-			//draw cube
-			for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
-			{
-				//apply technique
-				m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-				CMeshManager::Get()->DrawMeshByID("cube");
-			}
-		}
-	}
-	*/
-	time = timeGetTime() - time;
 	ostringstream convert;
-	convert << time;
+	convert << (float) (m_CurrentTime - m_PreviousTime);
 	pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
 	DebugFont.Draw(20,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
+	convert.clear();
+	convert << m_CurrentTime;
+	DebugFont.Draw(20,40,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
 	pDirectX->pSprite->Flush();
 	pDirectX->pSprite->End();
 	pDirectX->EndScene();

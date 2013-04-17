@@ -12,6 +12,7 @@ class CMatrix;
 class CMesh;
 class CVector3;
 class CVector4;
+class CQuaternion;
 
 class CGFXAPIBase
 {

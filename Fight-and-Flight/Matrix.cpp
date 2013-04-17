@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include "Vector3.h"
+#include "Quaternion.h"
 
 //-----------------------------------------------------------------------------
 // Name: ~CMatrix
@@ -159,8 +160,9 @@ void CMatrix::SetMatrixTranslation(	_In_ float x,
 }
 
 void CMatrix::SetTransformationMatrix(_In_ const CVector3& scale,
+									  _In_ const CQuaternion& orientation,
 									  _In_ const CVector3& translation)
 {
-	D3DXMatrixTransformation(&m_DXMatrix,NULL,NULL,&scale.GetD3DXVECTOR3(),NULL,NULL,&translation.GetD3DXVECTOR3());
+	D3DXMatrixTransformation(&m_DXMatrix,NULL,NULL,&scale.GetD3DXVECTOR3(),NULL,&orientation.GetD3DXQUATERNION(),&translation.GetD3DXVECTOR3());
 }
 #endif
