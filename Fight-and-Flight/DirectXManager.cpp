@@ -8,6 +8,13 @@ using namespace std;
 #include "Effect.h"
 #include "FontObj.h"
 
+#include "../TinyXML/tinystr.h"
+#include "../TinyXML/tinyxml.h"
+#include "../TinyXML/tinyxml.cpp"
+#include "../TinyXML/tinystr.cpp"
+#include "../TinyXML/tinyxmlparser.cpp"
+#include "../TinyXML/tinyxmlerror.cpp"
+
 CDirectXManager* CDirectXManager::s_Singleton = NULL;
 
 CDirectXManager* CDirectXManager::Get()
@@ -43,10 +50,12 @@ CDirectXManager::~CDirectXManager()
 {
 	if ( pRenderTargetView ) pRenderTargetView->Release();
 	if ( pSwapChain ) pSwapChain->Release();
-	if ( pD3DDevice ) pD3DDevice->Release();	
 	if ( pVertexLayout ) pVertexLayout->Release();
 	if ( pRS ) pRS->Release();	
 	if ( pDepthStencil ) pDepthStencil->Release();
+	if ( pSprite ) pSprite->Release();
+	if ( pD3DDevice ) pD3DDevice->Release();	
+	
 
 }
 /*******************************************************************
@@ -276,24 +285,87 @@ bool CDirectXManager::CreateShader(_In_ const string& filename,
 //	- indices: A vector of the indices in the mesh.
 //	- NumFaces: The number of faces in the mesh.
 // Outputs:
-//	- pMesh: A pointer to the newly created mesh.
+//	- out: A mesh to fill.
 //	- retval: false if the API calls failed.
 //-----------------------------------------------------------------------------
 bool CDirectXManager::CreateMesh(	_In_ const vector<vertex>& vertices,
 									_In_ const vector<UINT>& indices,
 									_In_ int numFaces,
 									_In_ const string& MeshID,
-									_Out_ CMesh &pMesh)
+									_Out_ CMesh &out)
 {
-	if ( FAILED(D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), numFaces, D3DX10_MESH_32_BIT, &pMesh.m_pDXMesh)))
+	if ( FAILED(D3DX10CreateMesh( pD3DDevice, vertexInputLayout, 2, "POSITION", vertices.size(), numFaces, D3DX10_MESH_32_BIT, &out.m_pDXMesh)))
 		return fatalError("Could not create mesh!");
 	//insert data into mesh and commit changes
-	pMesh.m_pDXMesh->SetVertexData(0, &vertices[0]);
-	pMesh.m_pDXMesh->SetIndexData(&indices[0], 36);
-	pMesh.m_pDXMesh->CommitToDevice();
-	pMesh.m_ID = MeshID;
+	out.m_pDXMesh->SetVertexData(0, &vertices[0]);
+	out.m_pDXMesh->SetIndexData(&indices[0], 36);
+	out.m_pDXMesh->CommitToDevice();
+	out.m_ID = MeshID;
 	return true;
 }
+//-----------------------------------------------------------------------------
+// Name: CreateMesh
+// Type: Factory
+// Vis: Public
+// Desc: Wraps the DirectX Mesh creation function: D3DX10CreateMesh and
+// provides some of the inputs. It deletes anything stored in the
+// pMesh pointer to make room for the new mesh.
+// Inputs:
+//	- filename: the name of an XML file containing the mesh to load.
+// Outputs:
+//	- pMesh: a mesh to fill.
+//	- retval: false if the API calls failed.
+//-----------------------------------------------------------------------------
+
+bool CDirectXManager::CreateMesh(	_In_ const string& filename,
+									_Out_ CMesh &out)
+{
+	TiXmlDocument doc( filename.c_str() );
+	doc.LoadFile();
+	TiXmlHandle hDoc(&doc);
+	TiXmlHandle hRoot(0);
+	hRoot = hDoc.FirstChildElement("Mesh").Element();
+	TiXmlHandle VertexXML = hRoot.FirstChildElement("Vertices");
+	TiXmlHandle IndexXML = hRoot.FirstChildElement("Indices");
+	vector<vertex> vertices = vector<vertex>();
+	TiXmlElement *child;
+	for( child = VertexXML.FirstChildElement().Element(); child; child = child->NextSiblingElement())
+	{
+		TiXmlElement* pos = child->FirstChildElement("Position");
+		TiXmlElement* col = child->FirstChildElement("Color");
+		D3DXVECTOR3 position = D3DXVECTOR3(0,0,0);
+		D3DXCOLOR color = D3DXCOLOR(0,0,0,0);
+		double d;
+		pos->Attribute("x", &d);
+		position.x = (float) d;
+		pos->Attribute("y", &d);
+		position.y = (float) d;
+		pos->Attribute("z", &d);
+		position.z = (float) d;
+		col->Attribute("r", &d);
+		color.r = (float) d;
+		col->Attribute("g", &d);
+		color.g = (float) d;
+		col->Attribute("b", &d);
+		color.b = (float) d;
+		col->Attribute("a", &d);
+		color.a = (float) d;
+		vertices.push_back(vertex(position,color));
+	}
+	vector<unsigned int> indices = vector<unsigned int>();
+	for (child = IndexXML.FirstChildElement().Element(); child; child = child->NextSiblingElement())
+	{
+		int i;
+		child->Attribute("i", &i);
+		indices.push_back((unsigned int) i);
+	}
+	int numFaces;
+	hRoot.Element()->Attribute("NumFaces", &numFaces);
+	
+
+	return CreateMesh(vertices,indices,numFaces,filename.substr(0, filename.length() - 4), out);
+}
+
 void CDirectXManager::BeginScene(void)
 {
 	pD3DDevice->ClearRenderTargetView( pRenderTargetView, D3DXCOLOR(0,0,0,0) );

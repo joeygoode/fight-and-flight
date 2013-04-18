@@ -33,6 +33,7 @@ CGame::~CGame(void)
 	delete m_pEffect;
 	CDirectXManager::Clear();
 	CMeshManager::Clear();
+	CEntityManager::Clear();
 }
 	
 //-------------------------------------------------------------------------
@@ -64,48 +65,41 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	if(!pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
 		return false;
 
-	CVector3 camera[] = {	CVector3(0.0f, 5.0f, -10.0f),
-							CVector3(0.0f, 0.0f, 1.0f),
-							CVector3(0.0f, 1.0f, 0.0f)	};
+	CVector3 camera[] = {	CVector3(0.0f, 10.0f, -2.0f),
+							CVector3(0.0f, 0.0f, 10.0f),
+							CVector3(0.0f, 0.0f, 1.0f)	};
 	
 	pGame->ViewMatrix.SetMatrixLookAtLH(camera[0], camera[1], camera[2]);		
 	pGame->ProjectionMatrix.SetMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)pDirectX->width/(float)pDirectX->height, 0.1f, 100.0f);
+	//pGame->ProjectionMatrix.SetMatrixOrthoLH(40.0,30.0,0.1f, 100.0f);
 
 	pGame->m_pEffect->SetVariableByName("View", pGame->ViewMatrix);
 	pGame->m_pEffect->SetVariableByName("Projection", pGame->ProjectionMatrix);
 
-	vector<vertex> vertices = vector<vertex>();
-	vertices.push_back(vertex( D3DXVECTOR3(-1,1,-1), D3DXCOLOR(1,0,0,1)));	//front top left
-	vertices.push_back(vertex( D3DXVECTOR3(1,1,-1), D3DXCOLOR(0,1,0,1)));	//front top right
-	vertices.push_back(vertex( D3DXVECTOR3(-1,-1,-1), D3DXCOLOR(0,0,1,1)));	//front bottom left
-	vertices.push_back(vertex( D3DXVECTOR3(1,-1,-1), D3DXCOLOR(1,1,0,1)));	//front bottom right
-
-	vertices.push_back(vertex( D3DXVECTOR3(-1,1,1), D3DXCOLOR(1,0,0,1)));	//back top left
-	vertices.push_back(vertex( D3DXVECTOR3(1,1,1), D3DXCOLOR(0,1,0,1)));	//back top right
-	vertices.push_back(vertex( D3DXVECTOR3(-1,-1,1), D3DXCOLOR(0,0,1,1)));	//back bottom left
-	vertices.push_back(vertex( D3DXVECTOR3(1,-1,1), D3DXCOLOR(1,1,0,1)));	//back bottom right
-
-	//create indexes for a cube 
-	unsigned int i[36] = {	2,0,3,3,1,0,							
-							3,1,7,7,5,1,							
-							6,4,2,2,0,4,							
-							7,5,6,6,4,5,							
-							0,4,1,1,5,4,							
-							6,2,7,7,3,2 };	
-	vector<UINT> indices = vector<UINT>();
-	indices.assign(i,i+36);
-	if (!CMeshManager::Get()->AllocateMesh(vertices,indices,6,"cube"))
+	if (!CMeshManager::Get()->AllocateMesh("cube.xml"))
 		return false;
-	CVector3 rcOrigin = CVector3(-14, 0, 0);
-
-	for ( int cols = 0; cols < 10; cols++ )
+	if (!CMeshManager::Get()->AllocateMesh("triangularpyramid.xml"))
+		return false;
+	if (!CMeshManager::Get()->AllocateMesh("squarepyramid.xml"))
+		return false;
+	CVector3 rcOrigin = CVector3(-6, 0, 5.0f);
+	ENTITY_DESC desc = { "LSide", "cube", CVector3(-11.0f,0.0f,50.0f), CVector3(0,0,D3DX_PI / -2.0f), CVector3(1.0f,0.5f,100.0f), CVector3(0,0,0), CVector3(0,0,0) };
+	if (!CEntityManager::Get()->AllocateEntity(desc))
+				return false;
+	ENTITY_DESC desc2 = { "RSide", "cube", CVector3(11.0f,0.0f,50.0f), CVector3(0,0,D3DX_PI / 2.0f), CVector3(-1.0f,0.5f,100.0f), CVector3(0,0,0), CVector3(0,0,0) };
+	if (!CEntityManager::Get()->AllocateEntity(desc2))
+				return false;
+	ENTITY_DESC desc4 = { "Player", "squarepyramid", CVector3(0.0f,0.0f,1.0f), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,0), CVector3(0,0,0) };
+	if (!CEntityManager::Get()->AllocateEntity(desc4))
+				return false;
+	for ( int cols = 0; cols < 4; cols++ )
 	{
-		for ( int rows = 0; rows < 15; rows ++ )
+		for ( int rows = 0; rows < 20; rows ++ )
 		{
 			//position cube
 			CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
-			ENTITY_DESC desc = { "Cube1", "cube", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,-.5f), CVector3(0, 3.14,0) };
-			if (!CEntityManager::Get()->AllocateEntity(desc))
+			ENTITY_DESC desc3 = { "tri", "triangularpyramid", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,0), CVector3(0, 0,0) };
+			if (!CEntityManager::Get()->AllocateEntity(desc3))
 				return false;
 		}
 	}
@@ -137,9 +131,6 @@ bool CGame::UpdateAndRender(void)
 	convert << (float) (m_CurrentTime - m_PreviousTime);
 	pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
 	DebugFont.Draw(20,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
-	convert.clear();
-	convert << m_CurrentTime;
-	DebugFont.Draw(20,40,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
 	pDirectX->pSprite->Flush();
 	pDirectX->pSprite->End();
 	pDirectX->EndScene();

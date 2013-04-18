@@ -131,6 +131,25 @@ void CMatrix::SetMatrixPerspectiveFovLH(	_In_ float vFov,
 }
 
 //-----------------------------------------------------------------------------
+// Name: SetMatrixOrthoLH
+// Type: Builder
+// Vis: Public
+// Desc: Makes this a LH perspective projection matrix
+// Inputs:
+//	- width: width of the target volume
+//	- height: height of the target volume
+//	- zNearPlane: z distance to the near plane
+//	- zFarPlane: z distance to the far plane
+//-----------------------------------------------------------------------------
+void CMatrix::SetMatrixOrthoLH(	_In_ float width,
+								_In_ float height,
+								_In_ float zNearPlane,
+								_In_ float zFarPlane)
+{
+	D3DXMatrixOrthoLH(&m_DXMatrix, width, height, zNearPlane, zFarPlane);
+}
+
+//-----------------------------------------------------------------------------
 // Name: CreateMatrixRotationY
 // Type: Factory
 // Vis: Public

@@ -16,10 +16,13 @@ struct ENTITY_DESC
 	CVector3 rotationalvelocity;
 };
 
+
+
 class CEntity;
 class CEntityRenderer;
 class CEntityTransform;
 class CEntityPhysics;
+class CEntityControl;
 class CEffect;
 
 //-----------------------------------------------------------------------------
@@ -43,6 +46,7 @@ class CEntityManager
 	vector<CEntityRenderer>* m_pRenderers;
 	vector<CEntityTransform>* m_pTransforms;
 	vector<CEntityPhysics>* m_pPhysics;
+	vector<CEntityControl>* m_pControllers;
 	static CEntityManager* s_Singleton;
 public:
 	static CEntityManager* Get(void);

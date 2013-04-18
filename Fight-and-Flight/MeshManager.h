@@ -14,6 +14,7 @@ class CMeshManager
 public:
 	static CMeshManager* Get(void);
 	static void Clear(void);
+	bool AllocateMesh(	_In_ const string& filename);
 	bool AllocateMesh(	_In_ const vector<vertex>& vertices,
 						_In_ const vector<UINT>& indices,
 						_In_ int NumFaces,

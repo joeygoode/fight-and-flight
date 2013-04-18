@@ -1,20 +1,20 @@
 Fight and Flight
 ----------------
 
-Right, here's how to write your own shader code:
-1.  Right now only the basicEffect file does anything.  Modify that.
-2.  You can only use the data stored in the vertex 
-(which I believe is just position and color data)
-3.  You can also use 3 uniforms, world matrix, view matrix, 
-and projection matrix.
-4.  Run the executable.  It should work.  
-If it doesn't, let me know and I'll see if I can fix it.
-5.  Your changes to basicEffect should be reflected in the executable.  
-Don't modify the other basicEffect as I'm using to make sure all the 
-changes I'm making aren't breaking anything.  When I run it from inside 
-the IDE, it uses the other basicEffect, so modify the one in the debug 
-folder at will.
+Josh, I really need those shaders to start looking done.
+We've got an 8 page paper to write that I haven't even thought about.
+Btw, you're stuck with world/projection/view matricies and whatever's
+in the vertices.  If you absolutely need more vertex data, add it to the 
+xml and I'll put in more parse support.  If you absolutely need a new uniform,
+let me know, but no promises.  I've got a day to essentially breathe life into
+this thing and I'm feeling the squeeze.  I've got no player control and I can't
+even kill an entity.
 
-Just focus on learning the shader language for now.  I'll try and get an 
-interface where I can expose whatever you need to you through XML.  I 
-want to get billboards in next so I can draw some terrain.
+Please get those shaders done so I don't have to worry about it.  It's a simple
+matter to say when an entity with faction X dies to spawn a powerup, but I need
+to have a way of being sure it works.  The sooner I can finish with the part of
+this for CG, the better.
+
+A lot of this essay is going to be on you.  I'll share my knowledge where I can,
+but every last minute of time is going to breathing life into this, my theory
+of comp final be damned.

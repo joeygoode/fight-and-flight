@@ -94,6 +94,9 @@
     <ClCompile Include="EntityPhysics.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="EntityControl.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXManager.h">
@@ -151,6 +154,9 @@
       <Filter>DirectX 10 Wrapper\Headers</Filter>
     </ClInclude>
     <ClInclude Include="EntityPhysics.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityControl.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

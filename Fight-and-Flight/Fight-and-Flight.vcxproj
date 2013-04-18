@@ -94,6 +94,7 @@
   <ItemGroup>
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityControl.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="EntityPhysics.cpp" />
     <ClCompile Include="EntityRenderer.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="DirectXManager.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityControl.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="EntityPhysics.h" />
     <ClInclude Include="EntityRenderer.h" />

@@ -8,6 +8,7 @@ using std::queue;
 #include "EntityPhysics.h"
 #include "Effect.h"
 #include "Matrix.h"
+#include "EntityControl.h"
 
 CEntityManager* CEntityManager::s_Singleton = NULL;
 
@@ -33,6 +34,7 @@ CEntityManager::CEntityManager(void)
 	m_pRenderers = new vector<CEntityRenderer>(m_MaxEntities);
 	m_pTransforms = new vector<CEntityTransform>(m_MaxEntities);
 	m_pPhysics = new vector<CEntityPhysics>(m_MaxEntities);
+	m_pControllers = new vector<CEntityControl>(m_MaxEntities);
 }
 
 
@@ -42,6 +44,7 @@ CEntityManager::~CEntityManager(void)
 	delete m_pRenderers;
 	delete m_pTransforms;
 	delete m_pPhysics;
+	delete m_pControllers;
 }
 
 bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
@@ -67,13 +70,15 @@ bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
 
 bool CEntityManager::ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const
 {
-	if (ElapsedTime <= 0)
-		ElapsedTime = .001;
-
+	if (ElapsedTime <= 0.0)
+		ElapsedTime = .001f;
+	if (ElapsedTime > .03f)
+		ElapsedTime = .03f;
 	for(int i = 0; i < m_HighestAssigned; i++)
 	{
 		if (!(*m_pEntities)[i].GetName().empty())
 		{
+			((*m_pControllers)[i]).Update(&(*m_pPhysics)[i],&(*m_pTransforms)[i]);
 			(*m_pPhysics)[i].Update(ElapsedTime,&(*m_pTransforms)[i]);
 			pEffect->SetVariableByName("World",(*m_pTransforms)[i].GetMatrix());
 			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )

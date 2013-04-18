@@ -26,6 +26,11 @@ public:
 	void SetMatrixLookAtLH( const CVector3& Eye,
 							const CVector3& At,
 							const CVector3& Up);
+	// Stores a Ortographic Projection matrix in this matrix
+	void SetMatrixOrthoLH(	_In_ float width,
+							_In_ float height,
+							_In_ float zNearPlane,
+							_In_ float zFarPlane);
 	// Stores a transformation matrix in the given matrix.
 	void SetTransformationMatrix(	const CVector3& scale,
 									const CQuaternion& orientation,

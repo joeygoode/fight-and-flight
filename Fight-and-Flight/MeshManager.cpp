@@ -34,6 +34,21 @@ CMeshManager::~CMeshManager(void)
 {
 }
 
+bool CMeshManager::AllocateMesh(	_In_ const string& filename)
+{
+	int top = (m_HighestAssigned == m_MaxMeshes) ? m_MaxMeshes : m_HighestAssigned + 1;
+	for(int i = 0; i<top; i++)
+	{
+		if (m_Meshes[i].GetID().empty())
+		{
+			CDirectXManager::Get()->CreateMesh(filename,m_Meshes[i]);
+			++m_HighestAssigned;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool CMeshManager::AllocateMesh(	_In_ const vector<vertex>& vertices,
 									_In_ const vector<UINT>& indices,
 									_In_ int NumFaces,
@@ -45,6 +60,7 @@ bool CMeshManager::AllocateMesh(	_In_ const vector<vertex>& vertices,
 		if (m_Meshes[i].GetID().empty())
 		{
 			CDirectXManager::Get()->CreateMesh(vertices,indices,NumFaces,MeshID,m_Meshes[i]);
+			++m_HighestAssigned;
 			return true;
 		}
 	}

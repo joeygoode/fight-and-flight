@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Mesh NumFaces=4>
+  <Vertices>
+    <Vertex>
+      <Position x=0 y=0 z=-1.5></Position>
+      <Color r=0.1 g=1.0 b=0.1 a=1.0></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=0 y=2 z=1></Position>
+      <Color r=0.1 g=.7 b=0.1 a=1.0></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=1.5 y=-1 z=1></Position>
+      <Color r=0.1 g=0.4 b=0.1 a=1.0></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=-1.5 y=-1 z=1></Position>
+      <Color r=0.1 g=0.4 b=0.1 a=1.0></Color>
+    </Vertex>
+  </Vertices>
+  <Indices>
+    <index i=0></index><index i=1></index><index i=2></index>
+    <index i=0></index><index i=1></index><index i=3></index>
+    <index i=0></index><index i=2></index><index i=3></index>
+    <index i=1></index><index i=2></index><index i=3></index>
+  </Indices>
+</Mesh>

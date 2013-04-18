@@ -71,6 +71,8 @@ public:
 					_In_ int NumFaces,
 					_In_ const string& MeshID,
 					_Out_ CMesh& pMesh);
+	bool CreateMesh(_In_ const string& filename,
+					_Out_ CMesh &pMesh);
 	bool CreateShader(	_In_ const string& filename,
 						_In_ const vector<string>& names,
 						_In_ const vector<string>& types,
