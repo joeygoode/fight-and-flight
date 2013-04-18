@@ -5,6 +5,7 @@ class CVector3 : CGFXAPIBase
 {
 	friend class CMatrix;
 public:
+	CVector3 operator= (const CVector3& that);
 	CVector3 operator+=(const CVector3& that);
 	CVector3 operator*=(float f);
 	CVector3 operator*(float f);

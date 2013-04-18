@@ -1,5 +1,7 @@
 #include <queue>
 using std::queue;
+#include <exception>
+using std::exception;
 
 #include "EntityManager.h"
 #include "Entity.h"
@@ -9,6 +11,9 @@ using std::queue;
 #include "Effect.h"
 #include "Matrix.h"
 #include "EntityControl.h"
+
+#include "../TinyXML/tinystr.h"
+#include "../TinyXML/tinyxml.h"
 
 CEntityManager* CEntityManager::s_Singleton = NULL;
 
@@ -47,7 +52,49 @@ CEntityManager::~CEntityManager(void)
 	delete m_pControllers;
 }
 
-bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
+ENTITY_DESC& CEntityManager::GetEntityDescFromFile(const string& filename, ENTITY_DESC& out)
+{
+	TiXmlDocument doc( filename.c_str() );
+	doc.LoadFile();
+	TiXmlHandle hDoc(&doc);
+	TiXmlHandle hRoot(0);
+	hRoot = hDoc.FirstChildElement("Entity").Element();
+	out.name = hRoot.Element()->Attribute("name");
+	out.mesh_id = hRoot.Element()->Attribute("mesh");
+	string con = hRoot.Element()->Attribute("control");
+	if (con == "player")
+		out.playercontrol = true;
+	else 
+		out.playercontrol = false;
+	TiXmlElement *child;
+	for( child = hRoot.FirstChildElement("Vec3").Element(); child; child = child->NextSiblingElement("Vec3"))
+	{
+		CVector3* vec;
+		string type = child->Attribute("value");
+		if (type == "position")
+			vec = &out.position;
+		else if (type == "orientation")
+			vec = &out.orientation;
+		else if (type == "scale")
+			vec = &out.scale;
+		else if (type == "velocity")
+			vec = &out.velocity;
+		else if (type == "rotational velocity")
+			vec = &out.rotationalvelocity;
+		else
+			throw exception("Error reading XML.");
+		double d;
+		child->Attribute("x", &d);
+		vec->SetX((float) d);
+		child->Attribute("y", &d);
+		vec->SetY((float) d);
+		child->Attribute("z", &d);
+		vec->SetZ((float) d);
+	}
+	return out;
+}
+
+bool CEntityManager::AllocateEntity(const ENTITY_DESC& desc)
 {
 	int top = (m_HighestAssigned == m_MaxEntities) ? m_MaxEntities : m_HighestAssigned + 1;
 	for(int i = 0; i<top; i++)
@@ -61,6 +108,7 @@ bool CEntityManager::AllocateEntity(ENTITY_DESC desc)
 			(*m_pTransforms)[i].SetScale(desc.scale);
 			(*m_pPhysics)[i].SetVelocity(desc.velocity);
 			(*m_pPhysics)[i].SetRotationalVelocity(desc.rotationalvelocity);
+			(*m_pControllers)[i].SetControl(desc.playercontrol);
 			++m_HighestAssigned;
 			return true;
 		}

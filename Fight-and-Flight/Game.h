@@ -16,6 +16,7 @@ class CGame
 	CMatrix	WorldMatrix;
 	int		m_CurrentTime;
 	int		m_PreviousTime;
+	int		m_TotalTime;
 public:
 
 	static bool CreateGame(_In_ HWND* hWnd, _Out_ CGame* &Game);

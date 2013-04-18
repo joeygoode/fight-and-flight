@@ -14,6 +14,7 @@ struct ENTITY_DESC
 	CVector3 scale;
 	CVector3 velocity;
 	CVector3 rotationalvelocity;
+	bool playercontrol;
 };
 
 
@@ -53,8 +54,9 @@ public:
 	static void Clear(void);
 	// Assigns a new entity from the pool.  Ensures that it's position
 	// in other vectors has been reset.
-	bool AllocateEntity(ENTITY_DESC desc);
+	bool AllocateEntity(const ENTITY_DESC& desc);
 	// Passes the physics vector and updates each entity.
+	ENTITY_DESC& GetEntityDescFromFile(const string& filename, ENTITY_DESC& out);
 	bool ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const;
 	bool KillByName(const string& name);
 	int Compact(void);

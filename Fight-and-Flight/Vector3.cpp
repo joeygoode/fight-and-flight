@@ -180,13 +180,18 @@ CVector3 CVector3::operator*(float f)
 
 CVector3 CVector3::operator%(float f)
 {
-	int div = (int) m_DXVector.x / f;
-	m_DXVector.x -= div * f;
-	div = (int) m_DXVector.y / f;
+	int div = (int) (m_DXVector.x / f);
+	m_DXVector.x -= (float)div * f;
+	div = (int) (m_DXVector.y / f);
 	m_DXVector.y -= div * f;
-	div = (int) m_DXVector.z / f;
+	div = (int) (m_DXVector.z / f);
 	m_DXVector.z -= div * f;
 	return *this;
 }
 
+CVector3 CVector3::operator=(const CVector3& that)
+{
+	Set(that);
+	return *this;
+}
 #endif

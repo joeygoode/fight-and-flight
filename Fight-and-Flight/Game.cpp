@@ -54,13 +54,15 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	if (!pDirectX->initialize(hWnd))
 		return false;
 
-	vector<string> names = vector<string>(3);
+	vector<string> names = vector<string>(4);
 	names[0] = "World";
 	names[1] = "Projection";
 	names[2] = "View";
-	vector<string> types = vector<string>(3);
+	names[3] = "TotalTime";
+	vector<string> types = vector<string>(4);
 	for (int i = 0; i < 3; i++)
 		types[i] = "matrix";
+	types[3] = "scalar";
 
 	if(!pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
 		return false;
@@ -83,14 +85,12 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	if (!CMeshManager::Get()->AllocateMesh("squarepyramid.xml"))
 		return false;
 	CVector3 rcOrigin = CVector3(-6, 0, 5.0f);
-	ENTITY_DESC desc = { "LSide", "cube", CVector3(-11.0f,0.0f,50.0f), CVector3(0,0,D3DX_PI / -2.0f), CVector3(1.0f,0.5f,100.0f), CVector3(0,0,0), CVector3(0,0,0) };
-	if (!CEntityManager::Get()->AllocateEntity(desc))
+	ENTITY_DESC desc;
+	if (!CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("LSide.xml",desc)))
 				return false;
-	ENTITY_DESC desc2 = { "RSide", "cube", CVector3(11.0f,0.0f,50.0f), CVector3(0,0,D3DX_PI / 2.0f), CVector3(-1.0f,0.5f,100.0f), CVector3(0,0,0), CVector3(0,0,0) };
-	if (!CEntityManager::Get()->AllocateEntity(desc2))
+	if (!CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("RSide.xml",desc)))
 				return false;
-	ENTITY_DESC desc4 = { "Player", "squarepyramid", CVector3(0.0f,0.0f,1.0f), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,0), CVector3(0,0,0) };
-	if (!CEntityManager::Get()->AllocateEntity(desc4))
+	if (!CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("player.xml", desc)))
 				return false;
 	for ( int cols = 0; cols < 4; cols++ )
 	{
@@ -98,8 +98,10 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 		{
 			//position cube
 			CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
-			ENTITY_DESC desc3 = { "tri", "triangularpyramid", CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows), CVector3(0,0,0), CVector3(1,1,1), CVector3(0,0,0), CVector3(0, 0,0) };
-			if (!CEntityManager::Get()->AllocateEntity(desc3))
+			ENTITY_DESC desc2;
+			CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc2);
+			desc2.position += CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);;
+			if (!CEntityManager::Get()->AllocateEntity(desc2))
 				return false;
 		}
 	}
@@ -120,6 +122,8 @@ bool CGame::UpdateAndRender(void)
 	pDirectX->BeginScene();
 	m_PreviousTime = m_CurrentTime;
 	m_CurrentTime = timeGetTime();
+	m_TotalTime += (m_CurrentTime - m_PreviousTime);
+	m_pEffect->SetVariableByName("TotalTime",(float) m_TotalTime);
 	//draw cube
 	for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
 	{

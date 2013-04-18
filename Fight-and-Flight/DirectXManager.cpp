@@ -401,7 +401,7 @@ bool CDirectXManager::CreateFontObj(const string& name, int size, CFontObj* Out)
 		DEFAULT_PITCH,
 		""
 	};
-	strcpy(desc.FaceName, name.c_str());
+	strcpy_s(desc.FaceName, name.c_str());
 	ID3DX10Font* pDXFont = NULL;
 	if (FAILED (D3DX10CreateFontIndirect(pD3DDevice, &desc, &Out->m_pDXFont)))
 		return false;

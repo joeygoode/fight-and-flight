@@ -61,7 +61,7 @@ bool initWindow(HWND &hWnd, HINSTANCE hInstance, int width, int height)
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
 	wcex.lpszMenuName	= NULL;
-	wcex.lpszClassName	= TEXT("DXTutorial");
+	wcex.lpszClassName	= TEXT("Fight-and-Flight");
 	wcex.hIconSm		= 0;
 	RegisterClassEx(&wcex);
 
@@ -70,8 +70,8 @@ bool initWindow(HWND &hWnd, HINSTANCE hInstance, int width, int height)
     AdjustWindowRect(&rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
 	//create the window from the class defined above	
-	hWnd = CreateWindow( "DXTutorial", 
-						 "Bobby Anguelov's DirectX 10 Tutorial 5 - Meshes", 
+	hWnd = CreateWindow( "Fight-and-Flight", 
+						 "Fight and Flight - Joey Goode & Josh Tsuji", 
 						 WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 						 CW_USEDEFAULT, 
 						 CW_USEDEFAULT, 

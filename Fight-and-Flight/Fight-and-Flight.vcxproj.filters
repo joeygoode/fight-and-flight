@@ -97,6 +97,9 @@
     <ClCompile Include="EntityControl.cpp">
       <Filter>Game Engine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="KeyboardControl.cpp">
+      <Filter>Game Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXManager.h">
@@ -157,6 +160,9 @@
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="EntityControl.h">
+      <Filter>Game Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardControl.h">
       <Filter>Game Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>
