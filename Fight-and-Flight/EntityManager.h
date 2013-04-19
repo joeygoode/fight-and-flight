@@ -15,6 +15,11 @@ struct ENTITY_DESC
 	CVector3 velocity;
 	CVector3 rotationalvelocity;
 	bool playercontrol;
+	int hitpoints;
+	string faction;
+	int width;
+	int height;
+	vector<CVector3>* hitbox;
 };
 
 
@@ -55,9 +60,13 @@ public:
 	// Assigns a new entity from the pool.  Ensures that it's position
 	// in other vectors has been reset.
 	bool AllocateEntity(const ENTITY_DESC& desc);
-	// Passes the physics vector and updates each entity.
+	// Assigns a new entity from the pool.  Appends a number to the
+	// name field so that each entity created this way has a unique
+	// ID
+	bool AllocateEntityDynamic(const ENTITY_DESC& desc);
+	// Pulls data from XML into an ENTITY_DESC
 	ENTITY_DESC& GetEntityDescFromFile(const string& filename, ENTITY_DESC& out);
-	bool ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const;
+	bool ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect) const;
 	bool KillByName(const string& name);
 	int Compact(void);
 private:

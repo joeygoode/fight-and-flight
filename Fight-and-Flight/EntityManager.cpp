@@ -11,6 +11,8 @@ using std::exception;
 #include "Effect.h"
 #include "Matrix.h"
 #include "EntityControl.h"
+#include <sstream>
+using std::ostringstream;
 
 #include "../TinyXML/tinystr.h"
 #include "../TinyXML/tinyxml.h"
@@ -66,6 +68,10 @@ ENTITY_DESC& CEntityManager::GetEntityDescFromFile(const string& filename, ENTIT
 		out.playercontrol = true;
 	else 
 		out.playercontrol = false;
+	hRoot.Element()->Attribute("hitpoints", &out.hitpoints);
+	out.faction = hRoot.Element()->Attribute("faction");
+	hRoot.Element()->Attribute("width", &out.width);
+	hRoot.Element()->Attribute("height", &out.height);
 	TiXmlElement *child;
 	for( child = hRoot.FirstChildElement("Vec3").Element(); child; child = child->NextSiblingElement("Vec3"))
 	{
@@ -91,7 +97,53 @@ ENTITY_DESC& CEntityManager::GetEntityDescFromFile(const string& filename, ENTIT
 		child->Attribute("z", &d);
 		vec->SetZ((float) d);
 	}
+	out.hitbox = new vector<CVector3>();
+	for( child = hRoot.FirstChildElement("Hitbox").FirstChildElement("Vec3").Element(); child; child = child->NextSiblingElement("Vec3"))
+	{
+		CVector3 vec;
+		double d;
+		child->Attribute("x", &d);
+		vec.SetX((float) d);
+		child->Attribute("y", &d);
+		vec.SetY((float) d);
+		child->Attribute("z", &d);
+		vec.SetZ((float) d);
+		out.hitbox->push_back(vec);
+	}
+
 	return out;
+}
+
+bool CEntityManager::AllocateEntityDynamic(const ENTITY_DESC& desc)
+{
+	int top = (m_HighestAssigned == m_MaxEntities) ? m_MaxEntities : m_HighestAssigned + 1;
+	for(int i = 0; i<top; i++)
+	{
+		if ((*m_pEntities)[i].GetName().empty())
+		{
+			string name = desc.name;
+			ostringstream convert;
+			convert << i;
+			name.append(convert.str());
+			(*m_pEntities)[i].SetName(name);
+			(*m_pEntities)[i].SetHitpoints(desc.hitpoints);
+			(*m_pEntities)[i].SetFaction(desc.faction);
+			(*m_pRenderers)[i].SetMeshID(desc.mesh_id);
+			(*m_pTransforms)[i].SetPosition(desc.position);
+			(*m_pTransforms)[i].SetOrientation(desc.orientation);
+			(*m_pTransforms)[i].SetScale(desc.scale);
+			(*m_pPhysics)[i].SetVelocity(desc.velocity);
+			(*m_pPhysics)[i].SetRotationalVelocity(desc.rotationalvelocity);
+			(*m_pPhysics)[i].SetWidth(desc.width);
+			(*m_pPhysics)[i].SetHeight(desc.height);
+			(*m_pPhysics)[i].DeleteHitbox();
+			(*m_pPhysics)[i].SetHitbox(desc.hitbox);
+			(*m_pControllers)[i].SetControl(desc.playercontrol);
+			++m_HighestAssigned;
+			return true;
+		}
+	}
+	return false;
 }
 
 bool CEntityManager::AllocateEntity(const ENTITY_DESC& desc)
@@ -102,12 +154,17 @@ bool CEntityManager::AllocateEntity(const ENTITY_DESC& desc)
 		if ((*m_pEntities)[i].GetName().empty())
 		{
 			(*m_pEntities)[i].SetName(desc.name);
+			(*m_pEntities)[i].SetHitpoints(desc.hitpoints);
 			(*m_pRenderers)[i].SetMeshID(desc.mesh_id);
 			(*m_pTransforms)[i].SetPosition(desc.position);
 			(*m_pTransforms)[i].SetOrientation(desc.orientation);
 			(*m_pTransforms)[i].SetScale(desc.scale);
 			(*m_pPhysics)[i].SetVelocity(desc.velocity);
 			(*m_pPhysics)[i].SetRotationalVelocity(desc.rotationalvelocity);
+			(*m_pPhysics)[i].SetWidth(desc.width);
+			(*m_pPhysics)[i].SetHeight(desc.height);
+			(*m_pPhysics)[i].DeleteHitbox();
+			(*m_pPhysics)[i].SetHitbox(desc.hitbox);
 			(*m_pControllers)[i].SetControl(desc.playercontrol);
 			++m_HighestAssigned;
 			return true;
@@ -116,7 +173,7 @@ bool CEntityManager::AllocateEntity(const ENTITY_DESC& desc)
 	return false;
 }
 
-bool CEntityManager::ProcessAllEntities(float ElapsedTime, CEffect* pEffect) const
+bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect) const
 {
 	if (ElapsedTime <= 0.0)
 		ElapsedTime = .001f;
@@ -126,13 +183,20 @@ bool CEntityManager::ProcessAllEntities(float ElapsedTime, CEffect* pEffect) con
 	{
 		if (!(*m_pEntities)[i].GetName().empty())
 		{
-			((*m_pControllers)[i]).Update(&(*m_pPhysics)[i],&(*m_pTransforms)[i]);
-			(*m_pPhysics)[i].Update(ElapsedTime,&(*m_pTransforms)[i]);
-			pEffect->SetVariableByName("World",(*m_pTransforms)[i].GetMatrix());
-			for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
+			(*m_pControllers)[i].Update(TotalTime, &(*m_pPhysics)[i],&(*m_pTransforms)[i],&(*m_pEntities)[i]);
+			(*m_pPhysics)[i].Update(ElapsedTime,i, m_HighestAssigned,m_pPhysics, m_pTransforms,m_pEntities);
+			if ((*m_pEntities)[i].GetHitpoints() <= 0)
+				(*m_pEntities)[i].SetName("");
+			else if ((*m_pTransforms)[i].GetPosition().GetZ() > 150.0f ||(*m_pTransforms)[i].GetPosition().GetZ() < -10.0f )
+				(*m_pEntities)[i].SetName("");
+			else
 			{
-				pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-				(*m_pRenderers)[i].Draw();
+				pEffect->SetVariableByName("World",(*m_pTransforms)[i].GetMatrix());
+				for( UINT p = 0; p < pEffect->GetTechDesc().Passes; p++ )
+				{
+					pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
+					(*m_pRenderers)[i].Draw();
+				}
 			}
 		}
 	}

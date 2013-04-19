@@ -4,6 +4,7 @@
 class CMatrix : CGFXAPIBase
 {
 	friend class CEffectVariable;
+	friend class CVector3;
 public:
 	//Constructs a new matrix defaults to the identity matrix.
 	CMatrix(void);

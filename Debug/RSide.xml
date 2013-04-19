@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Entity name="RSide" 
         mesh="cube" 
-        control="None">
+        control="None"
+        hitpoints=30000
+        faction="neutral"
+        width=2
+        height=1>
   <Vec3 value="position" x=11.0 y=0.0 z=50.0 />
   <Vec3 value="orientation" x=0.0 y=0.0 z=1.570796 />
   <Vec3 value="scale" x=-1.0 y=0.5 z=100.0 />
   <Vec3 value="velocity" x=0.0 y=0.0 z=0.0 />
   <Vec3 value="rotational velocity" x=0.0 y=0.0 z=0.0 />
+  <Hitbox>
+  </Hitbox>
 </Entity>

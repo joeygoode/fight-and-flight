@@ -20,6 +20,7 @@ using namespace std;
 CGame::CGame(void)
 {
 	m_pEffect = NULL;
+	m_TotalTime = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,7 +102,7 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 			ENTITY_DESC desc2;
 			CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc2);
 			desc2.position += CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);;
-			if (!CEntityManager::Get()->AllocateEntity(desc2))
+			if (!CEntityManager::Get()->AllocateEntityDynamic(desc2))
 				return false;
 		}
 	}
@@ -129,7 +130,7 @@ bool CGame::UpdateAndRender(void)
 	{
 		//apply technique
 		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-		CEntityManager::Get()->ProcessAllEntities((float) (m_CurrentTime - m_PreviousTime) / 1000.0f,m_pEffect);
+		CEntityManager::Get()->ProcessAllEntities((float) (m_CurrentTime - m_PreviousTime) / 1000.0f, (float) m_TotalTime / 1000.0f, m_pEffect);
 	}
 	ostringstream convert;
 	convert << (float) (m_CurrentTime - m_PreviousTime);

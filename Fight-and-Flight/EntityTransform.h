@@ -25,6 +25,6 @@ public:
 	void SetOrientation(const CVector3& vec);
 	void SetScale(float x, float y, float z);
 	void SetScale(const CVector3& vec);
-	CMatrix GetMatrix(void);
+	CMatrix GetMatrix(void) const;
 };
 

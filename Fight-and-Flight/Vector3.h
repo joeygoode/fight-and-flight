@@ -5,10 +5,11 @@ class CVector3 : CGFXAPIBase
 {
 	friend class CMatrix;
 public:
-	CVector3 operator= (const CVector3& that);
+	CVector3& operator= (const CVector3& that);
 	CVector3 operator+=(const CVector3& that);
+	CVector3 operator-(const CVector3& that) const;
 	CVector3 operator*=(float f);
-	CVector3 operator*(float f);
+	CVector3 operator*(float f) const;
 	CVector3 operator%(float f);
 	// Construct a new 3D vector (all data is 0)
 	CVector3(void);
@@ -30,6 +31,9 @@ public:
 	void SetZ(float z);
 	// Set the data of this vector equal to the input vector
 	void Set(const CVector3& that);
+	// Create a new vector, applying the matrix to this one.
+	CVector3& Transform(const CMatrix& matrix) const;
+	float LengthSq(void) const;
 // Use these functions if we're using DirectX 10
 #if (GRAPHICSAPI == DIRECTX10)
 private:

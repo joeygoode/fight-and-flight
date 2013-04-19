@@ -1,4 +1,5 @@
 #include "Vector3.h"
+#include "Matrix.h"
 
 
 //-----------------------------------------------------------------------------
@@ -173,7 +174,7 @@ CVector3 CVector3::operator*=(float f)
 	return *this;
 }
 
-CVector3 CVector3::operator*(float f)
+CVector3 CVector3::operator*(float f) const
 {
 	return CVector3(m_DXVector * f);
 }
@@ -189,9 +190,28 @@ CVector3 CVector3::operator%(float f)
 	return *this;
 }
 
-CVector3 CVector3::operator=(const CVector3& that)
+CVector3& CVector3::operator=(const CVector3& that)
 {
 	Set(that);
 	return *this;
 }
+
+CVector3& CVector3::Transform(const CMatrix& matrix) const
+{
+	D3DXVECTOR4 vec;
+	D3DXVec3Transform(&vec, &m_DXVector, &matrix.GetD3DXMATRIX());
+	return CVector3(vec.x,vec.y,vec.z);
+}
+
+CVector3 CVector3::operator-(const CVector3& that) const
+{
+	return CVector3(m_DXVector - that.m_DXVector);
+}
+
+float CVector3::LengthSq(void) const
+{
+	return D3DXVec3LengthSq(&m_DXVector);
+}
+
+
 #endif

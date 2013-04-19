@@ -93,7 +93,7 @@ void CEntityTransform::SetScale(const CVector3& vec)
 	m_Scale.Set(vec);
 }
 
-CMatrix CEntityTransform::GetMatrix(void)
+CMatrix CEntityTransform::GetMatrix(void) const
 {
 	CMatrix matrix = CMatrix();
 	matrix.SetTransformationMatrix(m_Scale,m_Orientation,m_Position);
