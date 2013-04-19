@@ -68,6 +68,7 @@ public:
 	ENTITY_DESC& GetEntityDescFromFile(const string& filename, ENTITY_DESC& out);
 	bool ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect) const;
 	bool KillByName(const string& name);
+	bool GetEntityByName(const string& name, CEntity*& out) const;
 	int Compact(void);
 private:
 	CEntityManager(void);

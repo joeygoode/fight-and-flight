@@ -185,9 +185,22 @@ bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEff
 		{
 			(*m_pControllers)[i].Update(TotalTime, &(*m_pPhysics)[i],&(*m_pTransforms)[i],&(*m_pEntities)[i]);
 			(*m_pPhysics)[i].Update(ElapsedTime,i, m_HighestAssigned,m_pPhysics, m_pTransforms,m_pEntities);
-			if ((*m_pEntities)[i].GetHitpoints() <= 0)
+			
+		}
+	}
+	for(int i = 0; i < m_HighestAssigned; i++)
+	{
+		if (!(*m_pEntities)[i].GetName().empty())
+		{
+			(*m_pEntities)[i].UpdateHP();
+			if ((*m_pEntities)[i].GetHitpoints() == 0)
+			{
 				(*m_pEntities)[i].SetName("");
-			else if ((*m_pTransforms)[i].GetPosition().GetZ() > 150.0f ||(*m_pTransforms)[i].GetPosition().GetZ() < -10.0f )
+				CEntity* player = NULL;
+				if(GetEntityByName("player", player))
+					++player->m_AddtlData;
+			}
+			else if ((*m_pTransforms)[i].GetPosition().GetZ() > 130.0f ||(*m_pTransforms)[i].GetPosition().GetZ() < -10.0f )
 				(*m_pEntities)[i].SetName("");
 			else
 			{
@@ -234,4 +247,17 @@ int CEntityManager::Compact(void)
 		}
 	}
 	return unused.size();
+}
+
+bool CEntityManager::GetEntityByName(const string& name, CEntity*& out) const
+{
+	for (int i = 0; i < m_MaxEntities; i++)
+	{
+		if ((*m_pEntities)[i].GetName() == name)
+		{
+			out = &(*m_pEntities)[i];
+			return true;
+		}
+	}
+	return false;
 }

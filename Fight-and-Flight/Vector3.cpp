@@ -196,7 +196,7 @@ CVector3& CVector3::operator=(const CVector3& that)
 	return *this;
 }
 
-CVector3& CVector3::Transform(const CMatrix& matrix) const
+CVector3 CVector3::Transform(const CMatrix& matrix) const
 {
 	D3DXVECTOR4 vec;
 	D3DXVec3Transform(&vec, &m_DXVector, &matrix.GetD3DXMATRIX());

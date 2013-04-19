@@ -3,6 +3,8 @@
 
 CEntity::CEntity(void)
 {
+	m_damage = 0;
+	m_AddtlData = 0;
 }
 
 
@@ -34,7 +36,7 @@ void CEntity::HurtMe(int i)
 	if (i < 0)
 		m_hitpoints = 0;
 	else
-		m_hitpoints -= i;
+		m_damage += i;
 }
 
 int CEntity::GetHitpoints(void) const
@@ -50,4 +52,15 @@ void CEntity::SetFaction(const string& faction)
 const string& CEntity::GetFaction(void) const
 {
 	return m_faction;
+}
+
+void CEntity::UpdateHP(void)
+{
+	if (m_hitpoints < 0)
+		m_damage = 0;
+	else if (m_hitpoints - m_damage < 0)
+		m_hitpoints = 0;
+	else
+		m_hitpoints -= m_damage;
+	m_damage = 0;
 }

@@ -10,6 +10,7 @@ using namespace std;
 #include "Vector3.h"
 #include "MeshManager.h"
 #include "EntityManager.h"
+#include "Entity.h"
 
 //-----------------------------------------------------------------------------
 // Name: CGame
@@ -93,6 +94,9 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 				return false;
 	if (!CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("player.xml", desc)))
 				return false;
+	CEntity* player = NULL;
+	CEntityManager::Get()->GetEntityByName("player", player);
+	player->m_AddtlData = 0;
 	for ( int cols = 0; cols < 4; cols++ )
 	{
 		for ( int rows = 0; rows < 20; rows ++ )
@@ -126,15 +130,34 @@ bool CGame::UpdateAndRender(void)
 	m_TotalTime += (m_CurrentTime - m_PreviousTime);
 	m_pEffect->SetVariableByName("TotalTime",(float) m_TotalTime);
 	//draw cube
+	int random = rand() % 200;
+	if (m_TotalTime > 6000 && random == 0)
+	{
+		ENTITY_DESC desc;
+		CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc);
+		desc.position.SetX((float) (rand() % 18) - 9); 
+		CEntityManager::Get()->AllocateEntityDynamic(desc);
+	}
 	for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
 	{
 		//apply technique
 		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-		CEntityManager::Get()->ProcessAllEntities((float) (m_CurrentTime - m_PreviousTime) / 1000.0f, (float) m_TotalTime / 1000.0f, m_pEffect);
+		CEntityManager::Get()->ProcessAllEntities(1.0f / ((float) (m_CurrentTime - m_PreviousTime) / 1000.0f), (float) m_TotalTime / 1000.0f, m_pEffect);
 	}
-	ostringstream convert;
-	convert << (float) (m_CurrentTime - m_PreviousTime);
+	CEntity* player = NULL;
+	if (!CEntityManager::Get()->GetEntityByName("player", player))
+	{
+		ENTITY_DESC desc;
+		CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("player.xml", desc));
+		CEntityManager::Get()->GetEntityByName("player", player);
+		player->m_AddtlData = 0;
+	}
 	pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
+	ostringstream convert;
+	convert << player->m_AddtlData;
+	DebugFont.Draw(700,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
+	convert.clear();
+	convert << (float) (m_CurrentTime - m_PreviousTime);
 	DebugFont.Draw(20,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
 	pDirectX->pSprite->Flush();
 	pDirectX->pSprite->End();

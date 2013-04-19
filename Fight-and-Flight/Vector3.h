@@ -32,7 +32,7 @@ public:
 	// Set the data of this vector equal to the input vector
 	void Set(const CVector3& that);
 	// Create a new vector, applying the matrix to this one.
-	CVector3& Transform(const CMatrix& matrix) const;
+	CVector3 Transform(const CMatrix& matrix) const;
 	float LengthSq(void) const;
 // Use these functions if we're using DirectX 10
 #if (GRAPHICSAPI == DIRECTX10)

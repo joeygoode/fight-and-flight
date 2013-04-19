@@ -24,7 +24,6 @@ void CEntityPhysics::Update(float ElapsedTime,int index, int top, vector<CEntity
 		{
 			if (CollideWith((*physics)[i],(*transforms)[index],(*transforms)[i]) && (*entities)[index].GetFaction() != (*entities)[i].GetFaction())
 				(*entities)[index].HurtMe((*entities)[i].GetHitpoints());
-				;
 		}
 		(*transforms)[index].Translate(m_Velocity * ElapsedTime);
 		(*transforms)[index].Rotate(m_RotationalVelocity * ElapsedTime);
