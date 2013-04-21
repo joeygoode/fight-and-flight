@@ -39,15 +39,27 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input ) : SV_Target
 {
+    float2 rand1    = float2(input.Pos[0], input.Pos[1]);
+    float2 noise    = (frac(sin(dot(rand1 ,float2(12.8291, 78.2331)*2.0)) * 1758.5453));
+    float randNoise = abs(noise.x + noise.y) * 0.5;
+
+    // Clone current color first
+    float4 color    = input.Color;
     float4 newColor = input.Color;
 
-    if (input.Pos.y < 150) {
-        newColor[0] = newColor[0] * input.Pos.y / 500;
-        newColor[1] = 0;
-        newColor[2] = 0;
-    }
+    float avgColor = (color[0] + color[1] + color[2]) / 3;
 
-    return newColor;
+    float redDifFromGreen  = abs(input.Color[1] - input.Color[0]);
+    float blueDifFromGreen = abs(input.Color[2] - input.Color[0]);
+
+    if (redDifFromGreen > 0.4 || blueDifFromGreen > 0.4) {
+        newColor[0] = 0;
+        newColor[1] = ((redDifFromGreen + blueDifFromGreen) / 2 + (randNoise / 2));
+        newColor[2] = 0;
+        return newColor;
+    }
+    else
+        return avgColor * 0.5;
 }
 
 //--------------------------------------------------------------------------------------

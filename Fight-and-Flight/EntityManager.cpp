@@ -212,9 +212,9 @@ bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEff
 			{
 				if ((*m_pEntities)[i].GetName() == "player")
 					m_HighScore = (*m_pEntities)[i].m_AddtlData;
-				if ((*m_pEntities)[i].GetName() == "power-up")
+				if ((*m_pEntities)[i].GetName().substr(0,8) == "power-up")
 				{
-					CEffectManager::Get()->Randomize();
+ 					CEffectManager::Get()->Randomize();
 					CEntity* player = NULL;
 					if(GetEntityByName("player", player))
 					++player->m_AddtlData;

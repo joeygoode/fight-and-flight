@@ -6,4 +6,16 @@
 		<Variable name="Projection" type="matrix" />
 		<Variable name="TotalTime" type="scalar" />
 	</Effect>
+	<Effect filename="darkRedInDistance.fx">
+		<Variable name="World" type="matrix" />
+		<Variable name="View" type="matrix" />
+		<Variable name="Projection" type="matrix" />
+		<Variable name="TotalTime" type="scalar" />
+	</Effect>
+	<Effect filename="nightVision.fx">
+		<Variable name="World" type="matrix" />
+		<Variable name="View" type="matrix" />
+		<Variable name="Projection" type="matrix" />
+		<Variable name="TotalTime" type="scalar" />
+	</Effect>
 <Effects>

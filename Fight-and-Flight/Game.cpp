@@ -121,12 +121,6 @@ bool CGame::UpdateAndRender(void)
 	{
 		m_PreviousTime = prevTime;
 		m_TotalTime += (m_CurrentTime - m_PreviousTime);
-		if (oldeffectnumber == CEffectManager::Get()->GetEffectNumber())
-		{
-			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("View", ViewMatrix);
-			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("Projection", ProjectionMatrix);
-			oldeffectnumber = CEffectManager::Get()->GetEffectNumber();
-		}
 		CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("TotalTime",(float) m_TotalTime);
 		//draw cube
 		int random = rand() % 200;
@@ -140,6 +134,8 @@ bool CGame::UpdateAndRender(void)
 		for( UINT p = 0; p < CEffectManager::Get()->GetCurrentEffect()->GetTechDesc().Passes; p++ )
 		{
 			//apply technique
+			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("View", ViewMatrix);
+			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("Projection", ProjectionMatrix);
 			CEffectManager::Get()->GetCurrentEffect()->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
 			CEntityManager::Get()->ProcessAllEntities(((float) (m_CurrentTime - m_PreviousTime)) / 1000.0f, (float) m_TotalTime / 1000.0f, CEffectManager::Get()->GetCurrentEffect());
 		}

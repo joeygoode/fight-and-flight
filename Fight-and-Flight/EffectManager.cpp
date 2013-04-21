@@ -89,5 +89,5 @@ int CEffectManager::GetEffectNumber(void) const
 
 void CEffectManager::Randomize(void)
 {
-	m_CurrentEffect = rand() % ((m_HighestAssigned == m_MaxEffects) ? m_MaxEffects : m_HighestAssigned + 1);
+	m_CurrentEffect = rand() % m_HighestAssigned;
 }

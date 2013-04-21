@@ -41,7 +41,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 {
     float4 newColor = input.Color;
 
-    if (input.Pos.y < 150) {
+    if (input.Pos.y < 250) {
         newColor[0] = newColor[0] * input.Pos.y / 500;
         newColor[1] = 0;
         newColor[2] = 0;
