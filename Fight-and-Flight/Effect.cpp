@@ -3,6 +3,11 @@
 #include "Matrix.h"
 #include "Vector4.h"
 #include <algorithm>
+
+string CEffect::GetName(void) const
+{
+	return m_name;
+}
 //-----------------------------------------------------------------------------
 // Name: SetVariableByName
 // Type: Method
@@ -105,11 +110,10 @@ bool CEffect::GetVariableByName(_In_ const string& name, _Out_ CEffectVariable*&
 //	- pDXTechnique: A pointer to the technique we're using
 //	- DXTechDesc:  A Technique Description structure
 //-----------------------------------------------------------------------------
-CEffect::CEffect(ID3D10Effect* pDXEffect, ID3D10EffectTechnique* pDXTechnique, D3D10_TECHNIQUE_DESC DXTechDesc)
+CEffect::CEffect()
 {
-	m_pDXEffect = pDXEffect;
-	m_pDXTechnique = pDXTechnique;
-	m_DXTechDesc = DXTechDesc;
+	m_pDXEffect = NULL;
+	m_pDXTechnique = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -124,8 +128,12 @@ CEffect::CEffect(ID3D10Effect* pDXEffect, ID3D10EffectTechnique* pDXTechnique, D
 // Outputs:
 //	- retval: False if the initialization failed.
 //-----------------------------------------------------------------------------
-bool CEffect::Initialize(const vector<string>& names,const vector<string>& types)
+bool CEffect::Initialize(const string& name, ID3D10Effect* pDXEffect, ID3D10EffectTechnique* pDXTechnique, D3D10_TECHNIQUE_DESC DXTechDesc, const vector<string>& names,const vector<string>& types)
 {
+	m_name = name;
+	m_pDXEffect = pDXEffect;
+	m_pDXTechnique = pDXTechnique;
+	m_DXTechDesc = DXTechDesc;
 	if (names.size() != types.size())
 		return false;
 	m_FXVariables.resize(names.size());

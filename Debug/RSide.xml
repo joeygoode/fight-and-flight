@@ -2,7 +2,7 @@
 <Entity name="RSide" 
         mesh="cube" 
         control="None"
-        hitpoints=30000
+        hitpoints=-1
         faction="neutral"
         width=2
         height=1>

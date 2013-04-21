@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Effects>
+	<Effect filename="basicEffect.fx">
+		<Variable name="World" type="matrix" />
+		<Variable name="View" type="matrix" />
+		<Variable name="Projection" type="matrix" />
+		<Variable name="TotalTime" type="scalar" />
+	</Effect>
+<Effects>

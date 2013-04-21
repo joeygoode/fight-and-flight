@@ -71,8 +71,7 @@ bool	CEntityPhysics::CollideWith(const CEntityPhysics& that, const CEntityTransf
 {
 	if(this->BoundingCircleCollide(that,thistransform,thattransform))
 	{
-		bool movementintersection = Intersect(thistransform.GetPosition(),this->m_PreviousPosition,thattransform.GetPosition(),that.m_PreviousPosition);
-		return this->HitboxCollide(that,thistransform,thattransform) || movementintersection;
+		return this->HitboxCollide(that,thistransform,thattransform);
 	}
 	else
 		return false;
@@ -88,7 +87,9 @@ bool	CEntityPhysics::BoundingCircleCollide(const CEntityPhysics& that, const CEn
 }
 
 // There could probably be a subroutine here, but I'll only fix it if it breaks.
-bool CEntityPhysics::HitboxCollide(const CEntityPhysics& that, const CEntityTransform& thistransform, const CEntityTransform& thattransform) const
+bool CEntityPhysics::HitboxCollide(	const CEntityPhysics& that, 
+									const CEntityTransform& thistransform,
+									const CEntityTransform& thattransform) const
 {
 	if (m_pVertices == NULL || that.m_pVertices == NULL)
 		return false;
@@ -126,6 +127,8 @@ bool CEntityPhysics::HitboxCollide(const CEntityPhysics& that, const CEntityTran
 				that_1 = that_2;
 				that_2 = &*it2;
 				intersection = intersection || Intersect(*this_1,*this_2,*that_1,*that_2);
+				if (intersection)
+					return intersection;
 				}
 			}
 			intersection = intersection || Intersect(*this_2,*this_0,*that_2,*that_0);
@@ -148,6 +151,40 @@ bool CEntityPhysics::HitboxCollide(const CEntityPhysics& that, const CEntityTran
 		}
 	}
 	intersection = intersection || Intersect(*this_2,*this_0,*that_2,*that_0);
+	that_0	= &thatboxes[0];
+	that_1 = NULL;
+	that_2 = NULL;
+	for (auto it3 = thatboxes.begin(); it3 != thatboxes.end(); it3++)
+	{
+		if (!that_2)
+		{
+			that_2 = &*it3;
+		}
+		else
+		{
+			that_1 = that_2;
+			that_2 = &*it3;
+			intersection = intersection || Intersect(thistransform.GetPosition(),this->m_PreviousPosition,*that_1,*that_2);
+		}
+	}
+	intersection = intersection || Intersect(thistransform.GetPosition(),this->m_PreviousPosition,*that_2,*that_0);
+	this_0	= &thatboxes[0];
+	this_1 = NULL;
+	this_2 = NULL;
+	for (auto it4 = thisboxes.begin(); it4 != thisboxes.end(); it4++)
+	{
+		if (!this_2)
+		{
+			this_2 = &*it4;
+		}
+		else
+		{
+			this_1 = that_2;
+			this_2 = &*it4;
+			intersection = intersection || Intersect(thattransform.GetPosition(),that.m_PreviousPosition,*this_1,*this_2);
+		}
+	}
+	intersection = intersection || Intersect(thattransform.GetPosition(),that.m_PreviousPosition,*this_2,*this_0);
 	return intersection;
 }
 

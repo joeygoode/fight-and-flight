@@ -76,7 +76,7 @@ public:
 	bool CreateShader(	_In_ const string& filename,
 						_In_ const vector<string>& names,
 						_In_ const vector<string>& types,
-						_Out_ CEffect* &pOut);
+						_Out_ CEffect &Out);
 	bool CreateFontObj(const string& name, int size, CFontObj* out);
 	void DrawFont(ID3DX10Font* font, int x, int y, string text, D3DXCOLOR color);
 private:

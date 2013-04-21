@@ -4,6 +4,7 @@
 matrix World;
 matrix View;
 matrix Projection;
+float TotalTime;
 
 struct PS_INPUT
 {

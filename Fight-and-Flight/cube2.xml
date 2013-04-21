@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Mesh NumFaces=12>
+  <Vertices>
+    <Vertex>
+      <Position x=-1 y=1 z=-1></Position>
+      <Color r=0.9 g=0.9 b=0.9 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=1 y=1 z=-1></Position>
+      <Color r=0.9 g=0.9 b=0.9 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=-1 y=-1 z=-1></Position>
+      <Color r=0.7 g=0.7 b=0.7 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=1 y=-1 z=-1></Position>
+      <Color r=0.7 g=0.7 b=0.7 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=-1 y=1 z=1></Position>
+      <Color r=0.9 g=0.9 b=0.9 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=1 y=1 z=1></Position>
+      <Color r=0.9 g=0.9 b=0.9 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=-1 y=-1 z=1></Position>
+      <Color r=0.7 g=0.7 b=0.7 a=0.7></Color>
+    </Vertex>
+    <Vertex>
+      <Position x=1 y=-1 z=1></Position>
+      <Color r=0.7 g=0.7 b=0.7 a=0.7></Color>
+    </Vertex>
+  </Vertices>
+  <Indices>
+    <index i=2></index><index i=0></index><index i=3></index>
+    <index i=3></index><index i=1></index><index i=0></index>
+    <index i=3></index><index i=1></index><index i=7></index>
+    <index i=7></index><index i=5></index><index i=1></index>
+    <index i=6></index><index i=4></index><index i=2></index>
+    <index i=2></index><index i=0></index><index i=4></index>
+    <index i=7></index><index i=5></index><index i=6></index>
+    <index i=6></index><index i=4></index><index i=5></index>
+    <index i=0></index><index i=4></index><index i=1></index>
+    <index i=1></index><index i=5></index><index i=4></index>
+    <index i=6></index><index i=2></index><index i=7></index>
+    <index i=7></index><index i=3></index><index i=2></index>
+  </Indices>
+</Mesh>

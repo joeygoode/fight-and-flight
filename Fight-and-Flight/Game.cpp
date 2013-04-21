@@ -11,6 +11,7 @@ using namespace std;
 #include "MeshManager.h"
 #include "EntityManager.h"
 #include "Entity.h"
+#include "EffectManager.h"
 
 //-----------------------------------------------------------------------------
 // Name: CGame
@@ -20,7 +21,6 @@ using namespace std;
 //-----------------------------------------------------------------------------
 CGame::CGame(void)
 {
-	m_pEffect = NULL;
 	m_TotalTime = 0;
 }
 
@@ -32,7 +32,6 @@ CGame::CGame(void)
 //-----------------------------------------------------------------------------
 CGame::~CGame(void)
 {
-	delete m_pEffect;
 	CDirectXManager::Clear();
 	CMeshManager::Clear();
 	CEntityManager::Clear();
@@ -66,7 +65,7 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 		types[i] = "matrix";
 	types[3] = "scalar";
 
-	if(!pDirectX->CreateShader("basicEffect.fx", names, types, pGame->m_pEffect))
+	if(!CEffectManager::Get()->AllocateEffect("basicEffect.xml"))
 		return false;
 
 	CVector3 camera[] = {	CVector3(0.0f, 10.0f, -2.0f),
@@ -77,14 +76,18 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	pGame->ProjectionMatrix.SetMatrixPerspectiveFovLH((float)D3DX_PI * 0.5f, (float)pDirectX->width/(float)pDirectX->height, 0.1f, 100.0f);
 	//pGame->ProjectionMatrix.SetMatrixOrthoLH(40.0,30.0,0.1f, 100.0f);
 
-	pGame->m_pEffect->SetVariableByName("View", pGame->ViewMatrix);
-	pGame->m_pEffect->SetVariableByName("Projection", pGame->ProjectionMatrix);
+	CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("View", pGame->ViewMatrix);
+	CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("Projection", pGame->ProjectionMatrix);
+
+	pGame->oldeffectnumber = 0;
 
 	if (!CMeshManager::Get()->AllocateMesh("cube.xml"))
 		return false;
 	if (!CMeshManager::Get()->AllocateMesh("triangularpyramid.xml"))
 		return false;
 	if (!CMeshManager::Get()->AllocateMesh("squarepyramid.xml"))
+		return false;
+	if (!CMeshManager::Get()->AllocateMesh("cube2.xml"))
 		return false;
 	CVector3 rcOrigin = CVector3(-6, 0, 5.0f);
 	ENTITY_DESC desc;
@@ -97,19 +100,6 @@ bool CGame::CreateGame(_In_ HWND* hWnd, _Out_ CGame* &pGame)
 	CEntity* player = NULL;
 	CEntityManager::Get()->GetEntityByName("player", player);
 	player->m_AddtlData = 0;
-	for ( int cols = 0; cols < 4; cols++ )
-	{
-		for ( int rows = 0; rows < 20; rows ++ )
-		{
-			//position cube
-			CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);
-			ENTITY_DESC desc2;
-			CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc2);
-			desc2.position += CVector3(rcOrigin.GetX() + 4 * cols, 0, rcOrigin.GetZ() + 4 * rows);;
-			if (!CEntityManager::Get()->AllocateEntityDynamic(desc2))
-				return false;
-		}
-	}
 	pDirectX->CreateFontObj("Arial", 14,&pGame->DebugFont);
 	pGame->m_CurrentTime = timeGetTime();
 	return true;
@@ -125,42 +115,55 @@ bool CGame::UpdateAndRender(void)
 {
 	CDirectXManager* pDirectX = CDirectXManager::Get();
 	pDirectX->BeginScene();
-	m_PreviousTime = m_CurrentTime;
+	int prevTime = m_CurrentTime;
 	m_CurrentTime = timeGetTime();
-	m_TotalTime += (m_CurrentTime - m_PreviousTime);
-	m_pEffect->SetVariableByName("TotalTime",(float) m_TotalTime);
-	//draw cube
-	int random = rand() % 200;
-	if (m_TotalTime > 6000 && random == 0)
+	if (prevTime != m_CurrentTime)
 	{
-		ENTITY_DESC desc;
-		CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc);
-		desc.position.SetX((float) (rand() % 18) - 9); 
-		CEntityManager::Get()->AllocateEntityDynamic(desc);
+		m_PreviousTime = prevTime;
+		m_TotalTime += (m_CurrentTime - m_PreviousTime);
+		if (oldeffectnumber == CEffectManager::Get()->GetEffectNumber())
+		{
+			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("View", ViewMatrix);
+			CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("Projection", ProjectionMatrix);
+			oldeffectnumber = CEffectManager::Get()->GetEffectNumber();
+		}
+		CEffectManager::Get()->GetCurrentEffect()->SetVariableByName("TotalTime",(float) m_TotalTime);
+		//draw cube
+		int random = rand() % 200;
+		if (random == 0)
+		{
+			ENTITY_DESC desc;
+			CEntityManager::Get()->GetEntityDescFromFile("Enemy.xml", desc);
+			desc.position.SetX((float) (rand() % 16) - 8); 
+			CEntityManager::Get()->AllocateEntityDynamic(desc);
+		}
+		for( UINT p = 0; p < CEffectManager::Get()->GetCurrentEffect()->GetTechDesc().Passes; p++ )
+		{
+			//apply technique
+			CEffectManager::Get()->GetCurrentEffect()->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
+			CEntityManager::Get()->ProcessAllEntities(((float) (m_CurrentTime - m_PreviousTime)) / 1000.0f, (float) m_TotalTime / 1000.0f, CEffectManager::Get()->GetCurrentEffect());
+		}
+		CEntity* player = NULL;
+		if (!CEntityManager::Get()->GetEntityByName("player", player))
+		{
+			ENTITY_DESC desc;
+			CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("player.xml", desc));
+			CEntityManager::Get()->GetEntityByName("player", player);
+			player->m_AddtlData = 0;
+		}
+		pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
+		ostringstream convert;
+		convert << "Your Score: " << player->m_AddtlData << endl;
+		convert << "High Score: " << CEntityManager::Get()->m_HighScore << endl;
+		DebugFont.Draw(650,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
+		ostringstream convert2;
+		convert2 << 1.0f / ((float) (m_CurrentTime - m_PreviousTime) / 1000.0f) << endl;
+		convert2 << m_CurrentTime << endl;
+		convert2 << m_PreviousTime << endl;
+		DebugFont.Draw(20,20,convert2.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
+		pDirectX->pSprite->Flush();
+		pDirectX->pSprite->End();
+		pDirectX->EndScene();
 	}
-	for( UINT p = 0; p < m_pEffect->GetTechDesc().Passes; p++ )
-	{
-		//apply technique
-		m_pEffect->GetTechnique()->GetPassByIndex( p )->Apply( 0 );
-		CEntityManager::Get()->ProcessAllEntities(1.0f / ((float) (m_CurrentTime - m_PreviousTime) / 1000.0f), (float) m_TotalTime / 1000.0f, m_pEffect);
-	}
-	CEntity* player = NULL;
-	if (!CEntityManager::Get()->GetEntityByName("player", player))
-	{
-		ENTITY_DESC desc;
-		CEntityManager::Get()->AllocateEntity(CEntityManager::Get()->GetEntityDescFromFile("player.xml", desc));
-		CEntityManager::Get()->GetEntityByName("player", player);
-		player->m_AddtlData = 0;
-	}
-	pDirectX->pSprite->Begin( D3DX10_SPRITE_SAVE_STATE | D3DX10_SPRITE_SORT_DEPTH_BACK_TO_FRONT);
-	ostringstream convert;
-	convert << player->m_AddtlData;
-	DebugFont.Draw(700,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
-	convert.clear();
-	convert << (float) (m_CurrentTime - m_PreviousTime);
-	DebugFont.Draw(20,20,convert.str(),CColor(1.0f, 1.0f, 1.0f, 1.0f));
-	pDirectX->pSprite->Flush();
-	pDirectX->pSprite->End();
-	pDirectX->EndScene();
 	return true;
 }

@@ -9,7 +9,7 @@
   <Vec3 value="position" x=0.0 y=0.0 z=2.0 />
   <Vec3 value="orientation" x=0.0 y=0.0 z=0.0 />
   <Vec3 value="scale" x=0.25 y=0.25 z=0.25 />
-  <Vec3 value="velocity" x=0.0 y=0.0 z=1.0 />
+  <Vec3 value="velocity" x=0.0 y=0.0 z=4.0 />
   <Vec3 value="rotational velocity" x=0.0 y=0.0 z=0.0 />
   <Hitbox>
     <Vec3 value="position" x=1.0 y=0.0 z=1.0 />

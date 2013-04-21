@@ -11,6 +11,7 @@ using std::exception;
 #include "Effect.h"
 #include "Matrix.h"
 #include "EntityControl.h"
+#include "EffectManager.h"
 #include <sstream>
 using std::ostringstream;
 
@@ -37,11 +38,18 @@ CEntityManager::CEntityManager(void)
 {
 	m_MaxEntities = 200;
 	m_HighestAssigned = 0;
+	m_HighScore = 0;
 	m_pEntities = new vector<CEntity>(m_MaxEntities);
 	m_pRenderers = new vector<CEntityRenderer>(m_MaxEntities);
 	m_pTransforms = new vector<CEntityTransform>(m_MaxEntities);
 	m_pPhysics = new vector<CEntityPhysics>(m_MaxEntities);
 	m_pControllers = new vector<CEntityControl>(m_MaxEntities);
+	TiXmlDocument doc( "data.xml" );
+	doc.LoadFile();
+	TiXmlHandle hDoc(&doc);
+	TiXmlHandle hRoot(0);
+	hRoot = hDoc.FirstChildElement("root").Element();
+	hRoot.Element()->Attribute("hiscore", &m_HighScore);
 }
 
 
@@ -52,6 +60,13 @@ CEntityManager::~CEntityManager(void)
 	delete m_pTransforms;
 	delete m_pPhysics;
 	delete m_pControllers;
+	TiXmlDocument doc( "data.xml" );
+	doc.LoadFile();
+	TiXmlHandle hDoc(&doc);
+	TiXmlHandle hRoot(0);
+	hRoot = hDoc.FirstChildElement("root").Element();
+	hRoot.Element()->SetAttribute("hiscore", m_HighScore);
+	doc.SaveFile();
 }
 
 ENTITY_DESC& CEntityManager::GetEntityDescFromFile(const string& filename, ENTITY_DESC& out)
@@ -173,12 +188,12 @@ bool CEntityManager::AllocateEntity(const ENTITY_DESC& desc)
 	return false;
 }
 
-bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect) const
+bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect)
 {
 	if (ElapsedTime <= 0.0)
-		ElapsedTime = .001f;
-	if (ElapsedTime > .03f)
-		ElapsedTime = .03f;
+		ElapsedTime = 0.001f;
+	if (ElapsedTime > 0.03f)
+		ElapsedTime = 0.03f;
 	for(int i = 0; i < m_HighestAssigned; i++)
 	{
 		if (!(*m_pEntities)[i].GetName().empty())
@@ -195,6 +210,22 @@ bool CEntityManager::ProcessAllEntities(float ElapsedTime, float TotalTime, CEff
 			(*m_pEntities)[i].UpdateHP();
 			if ((*m_pEntities)[i].GetHitpoints() == 0)
 			{
+				if ((*m_pEntities)[i].GetName() == "player")
+					m_HighScore = (*m_pEntities)[i].m_AddtlData;
+				if ((*m_pEntities)[i].GetName() == "power-up")
+				{
+					CEffectManager::Get()->Randomize();
+					CEntity* player = NULL;
+					if(GetEntityByName("player", player))
+					++player->m_AddtlData;
+				}
+				if ((*m_pEntities)[i].GetName().substr(0,5) == "Enemy")
+				{
+					ENTITY_DESC desc;
+					GetEntityDescFromFile("powerup.xml", desc);
+					desc.position = (*m_pTransforms)[i].GetPosition();
+					AllocateEntityDynamic(desc);
+				}
 				(*m_pEntities)[i].SetName("");
 				CEntity* player = NULL;
 				if(GetEntityByName("player", player))
@@ -256,7 +287,7 @@ bool CEntityManager::GetEntityByName(const string& name, CEntity*& out) const
 		if ((*m_pEntities)[i].GetName() == name)
 		{
 			out = &(*m_pEntities)[i];
-			return true;
+ 			return true;
 		}
 	}
 	return false;

@@ -66,10 +66,11 @@ public:
 	bool AllocateEntityDynamic(const ENTITY_DESC& desc);
 	// Pulls data from XML into an ENTITY_DESC
 	ENTITY_DESC& GetEntityDescFromFile(const string& filename, ENTITY_DESC& out);
-	bool ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect) const;
+	bool ProcessAllEntities(float ElapsedTime, float TotalTime, CEffect* pEffect);
 	bool KillByName(const string& name);
 	bool GetEntityByName(const string& name, CEntity*& out) const;
 	int Compact(void);
+	int m_HighScore;
 private:
 	CEntityManager(void);
 	~CEntityManager(void);

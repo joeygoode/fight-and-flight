@@ -228,12 +228,13 @@ bool CDirectXManager::createRenderTargetsAndDepthBuffer( UINT width, UINT height
 bool CDirectXManager::CreateShader(_In_ const string& filename, 
 								   _In_ const vector<string>& names, 
 								   _In_ const vector<string>& types, 
-								   _Out_ CEffect* &pEffect)
+								   _Out_ CEffect& Out)
 {
 	ID3D10Effect* pDXEffect;
 	ID3D10EffectTechnique* pDXTechnique;
 	D3D10_TECHNIQUE_DESC DXtechDesc;
-	if (FAILED(D3DX10CreateEffectFromFile(	filename.c_str(), 
+	HRESULT result;
+	if (FAILED(result = D3DX10CreateEffectFromFile(	filename.c_str(), 
 											NULL, NULL, 
 											"fx_4_0", 
 											D3D10_SHADER_ENABLE_STRICTNESS, 
@@ -264,11 +265,7 @@ bool CDirectXManager::CreateShader(_In_ const string& filename,
 	//get technique description
 	pDXTechnique->GetDesc( &DXtechDesc );
 
-	if (!pEffect)
-		delete pEffect;
-	pEffect = new CEffect(pDXEffect, pDXTechnique, DXtechDesc);
-
-	pEffect->Initialize(names, types);
+	Out.Initialize(filename.substr(0,filename.length() - 3), pDXEffect, pDXTechnique, DXtechDesc, names, types);
 
 
 	return true;
